@@ -1,0 +1,82 @@
+{
+  "errors": {
+    "unavailable": "Server unavailable",
+    "post_timeout": "No answer received"
+  },
+  "date": {
+    "day": {
+      "zero": "{} days",
+      "one": "{} day",
+      "few": "{} days",
+      "many": "{} days",
+      "other": "{} days"
+    },
+    "hour": {
+      "zero": "{} hour",
+      "one": "{} hour",
+      "few": "{} hours",
+      "many": "{} hours",
+      "other": "{} hours"
+    },
+    "minute": {
+      "zero": "{} minute",
+      "one": "{} minute",
+      "few": "{} minutes",
+      "many": "{} minutes",
+      "other": "{} minutes"
+    },
+    "compact_minute": {
+      "zero": "{}m",
+      "one": "{}m",
+      "few": "{}m",
+      "many": "{}m",
+      "other": "{}m"
+    },
+    "compact_hour": {
+      "zero": "{}h",
+      "one": "{}h",
+      "few": "{}h",
+      "many": "{}h",
+      "other": "{}h"
+    }
+  },
+  "thread": {
+    "zero": "{} thread",
+    "one": "{} thread",
+    "few": "{} threads",
+    "many": "{} threads",
+    "other": "{} threads"
+  },
+  "post": {
+    "zero": "{} post",
+    "one": "{} post",
+    "few": "{} posts",
+    "many": "{} posts",
+    "other": "{} posts"
+  },
+  "times": {
+    "zero": "{} time",
+    "one": "{} time",
+    "few": "{} times",
+    "many": "{} times",
+    "other": "{} times"
+  },
+  "reply": {
+    "zero": "{} reply",
+    "one": "{} reply",
+    "few": "{} replies",
+    "many": "{} replies",
+    "other": "{} replies"
+  },
+  "stats": {
+    "threads_visited": "Threads read:",
+    "threads_clicked": "Threads visited:",
+    "threads_created": "Threads created:",
+    "posts_created": "Posts sent:",
+    "sent_from": "Sent from"
+  },
+  "after": "after",
+  "ago": "ago",
+  "paranoia_mode": "ALL server features will be disabled, including new version check. Developer won't receive any crash reports and usage stats, and server push notifications on replies will be disabled.",
+  "now": "now"
+}
