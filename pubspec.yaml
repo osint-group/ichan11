@@ -1,5 +1,9 @@
 name: iChan
+<<<<<<< HEAD
 version: 1.20.9111532+878
+=======
+version: 1.20.9111736+878
+>>>>>>> f334a43... Fix for search
 publish_to: none
 description: Forum reader
 environment:

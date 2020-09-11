@@ -67,7 +67,15 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
       searchData.query = q;
       searchData.pos = event.pos;
 
-      searchData.results = q.contains(' ') ? searchAll(threadData, q) : searchWord(threadData, q);
+      if (q.contains(' ')) {
+        searchData.results = searchAll(threadData, q);
+      } else {
+        searchData.results = searchWord(threadData, q);
+
+        if (searchData.results.isEmpty) {
+          searchData.results = searchAll(threadData, q);
+        }
+      }
 
       if (searchData.results.isNotEmpty) {
         yield StartScroll(

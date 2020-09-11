@@ -65,13 +65,15 @@ class FavoritesListState extends State<FavoritesList> {
 
   SliverFixedExtentList favsHeader() {
     return SliverFixedExtentList(
-      itemExtent: 45.0,
+      itemExtent: 54.0,
       delegate: SliverChildListDelegate(
         [
           CupertinoSegmentedControl(
             groupValue: _selectedTab,
             selectedColor: my.theme.primaryColor,
             unselectedColor: my.theme.backgroundColor,
+            padding: const EdgeInsets.symmetric(
+                vertical: Consts.sidePadding, horizontal: Consts.sidePadding),
             onValueChanged: (val) {
               setState(() {
                 _selectedTab = val as int;
