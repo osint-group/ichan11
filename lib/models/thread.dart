@@ -170,7 +170,7 @@ class Thread {
       _titleOrBody ??= Htmlz.unescape(cleanBody.substring(0, trimSize));
       return _titleOrBody;
     } else {
-      return _title;
+      return Htmlz.unescape(_title);
     }
   }
 

@@ -452,7 +452,6 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
 
   // TODO: DRY
   int _appendPosts(List<Post> newPosts, {ThreadStorage fav, ThreadData data}) {
-    print("APPENDING");
     data ??= getThreadData(fav.key);
     fav ??= data.threadStorage;
     int lastCounter;
@@ -471,6 +470,12 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
         }
       }
 
+      final myPost =
+          my.posts.get("${post.platform.toString()}-${post.boardName}-${post.outerId}") as Post;
+      if (myPost != null && myPost.isMine) {
+        post.isMine = true;
+      }
+
       // mark green
       for (final postId in post.repliesParent) {
         final platform = fav?.platform ?? data.thread.platform;
@@ -480,15 +485,14 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
           fav.hasReplies = true;
           fav.putOrSave();
           if (!post.isPersisted) {
-            print("ADDING NEW POST TO ME");
             post.isToMe = true;
             post.isUnread = true;
             my.posts.put(post.toKey, post);
           }
         }
 
-        final parentPost = data.posts.firstWhere((e) => e.outerId == postId, orElse: () => null);
-        if (parentPost != null) {
+        final parentPost = data?.posts?.firstWhere((e) => e.outerId == postId, orElse: () => null);
+        if (parentPost != null && !parentPost.replies.contains(post.outerId)) {
           parentPost.replies.add(post.outerId);
         }
       }

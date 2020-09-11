@@ -55,7 +55,7 @@ class Post extends HiveObject {
       counter: json['number'] as int,
       email: _email,
       isSage: _email.toLowerCase() == "sage",
-      mediaFiles: json['files'],
+      mediaFiles: json['files'] ?? [],
       platform: json['platform'],
       repliesParent: json['repliesParent'],
     );
@@ -73,7 +73,7 @@ class Post extends HiveObject {
       timestamp: thread.timestamp,
       outerId: thread.outerId,
       counter: 1,
-      mediaFiles: thread.mediaFiles,
+      mediaFiles: thread.mediaFiles ?? [],
       platform: thread.platform,
       repliesParent: [],
     );
@@ -99,6 +99,7 @@ class Post extends HiveObject {
       isToMe: payload['isToMe'] ?? false,
       isUnread: payload['isUnread'] ?? false,
       platform: payload['platform'],
+      mediaFiles: [],
     );
 
     _post.replies = [];
@@ -144,7 +145,7 @@ class Post extends HiveObject {
   int counter;
 
   @HiveField(12)
-  final List<Media> mediaFiles;
+  List<Media> mediaFiles;
 
   @HiveField(13)
   List<String> repliesParent;

@@ -39,7 +39,7 @@ class MenuSwitch extends StatelessWidget {
     return Container(
       height: Consts.menuItemHeight,
       padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding * 1.5),
-      decoration: BoxDecoration(color: my.theme.backgroudMenuColor, border: makeBorder()),
+      decoration: BoxDecoration(color: my.theme.backgroundMenuColor, border: makeBorder()),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

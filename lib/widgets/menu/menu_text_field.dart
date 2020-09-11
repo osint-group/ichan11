@@ -83,7 +83,7 @@ class MenuTextFieldState extends State<MenuTextField> {
         height: Consts.menuItemHeight,
         padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding * 1.5),
         decoration: BoxDecoration(
-          color: my.theme.backgroudMenuColor,
+          color: my.theme.backgroundMenuColor,
           border: makeBorder(),
         ),
         child: Row(
@@ -174,7 +174,7 @@ class _MenuEditField extends StatelessWidget {
       controller: controller,
       autofocus: true,
       decoration: BoxDecoration(
-        color: my.theme.backgroudMenuColor,
+        color: my.theme.backgroundMenuColor,
       ),
       // clearButtonMode: OverlayVisibilityMode.editing,
 

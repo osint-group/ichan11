@@ -26,7 +26,10 @@ class BoardPage extends StatelessWidget {
       Helper.setAutoturn('portrait');
     }
 
-    final data = {'page': 'board', 'board': board};
+    final data = {
+      'page': 'board',
+      'board': board,
+    };
     my.prefs.put('last_screen', data);
 
     return HeaderNavbar(

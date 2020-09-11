@@ -16,6 +16,7 @@ class ThemeManager {
     'orange_white': OrangeWhiteTheme(),
     'black_white': BlackWhiteTheme(),
     'dark_green': DarkGreenTheme(),
+    'dark_blue': DarkBlueTheme(),
     'dark': DarkTheme(),
   };
 

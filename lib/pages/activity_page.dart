@@ -269,6 +269,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
   ThreadData buildThreadData(Post post) {
     post.replies ??= [];
+    post.mediaFiles ??= [];
     final threadData = my.threadBloc.getThreadData(post.toThreadKey);
 
     if (threadData != null) {

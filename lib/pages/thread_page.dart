@@ -65,6 +65,7 @@ class _ThreadPageState extends State<ThreadPage> with MediaActions {
       'page': 'thread',
       'threadId': thread.outerId,
       'key': thread.toKey,
+      'platform': thread.platform,
     };
     my.prefs.put('last_screen', data);
 

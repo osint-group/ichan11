@@ -53,7 +53,7 @@ class MenuSelect extends StatelessWidget {
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.5),
-                  color: my.theme.backgroudMenuColor,
+                  color: my.theme.backgroundMenuColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

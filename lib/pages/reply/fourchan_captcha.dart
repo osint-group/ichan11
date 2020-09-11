@@ -51,7 +51,7 @@ class _FourchanCaptchaPageState extends State<FourchanCaptchaPage> {
   }
 
   void checkCaptchaState() {
-    Future.delayed(10.seconds).then((val) {
+    Future.delayed(15.seconds).then((val) {
       if (mounted && status == CaptchaStatus.loading) {
         setState(() {
           status = CaptchaStatus.error;

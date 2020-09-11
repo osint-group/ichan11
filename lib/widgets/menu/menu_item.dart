@@ -35,7 +35,8 @@ class MenuItem extends StatelessWidget {
         Navigator.push(context, CupertinoPageRoute(builder: (context) => page));
       },
       child: Container(
-          decoration: BoxDecoration(color: my.theme.backgroudMenuColor, borderRadius: borderRadius),
+          decoration:
+              BoxDecoration(color: my.theme.backgroundMenuColor, borderRadius: borderRadius),
           padding: const EdgeInsets.fromLTRB(15.0, 12.0, 15.0, 12.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

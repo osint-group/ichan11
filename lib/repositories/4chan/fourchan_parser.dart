@@ -59,6 +59,7 @@ Future<Map<String, dynamic>> fourchanProcessPosts(Map<String, String> args,
     decoded[0]['images'] as int,
     "",
     decoded[0]['unique_ips'] as int,
+    [],
   );
   thread.isClosed = decoded[0]['closed'] == 1;
 

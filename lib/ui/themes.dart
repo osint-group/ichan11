@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
 const myOrange = Color(0xffFE9500);
+const myLightBlue = Color(0xff95ACC2);
 
 abstract class MyTheme {
   String name;
@@ -27,7 +28,7 @@ abstract class MyTheme {
   Color alertColor;
   Color foregroundBrightColor;
   Color foregroundMenuColor;
-  Color backgroudMenuColor;
+  Color backgroundMenuColor;
   Color alphaBackground;
   Color quoteColor;
   Color dividerColor;
@@ -63,7 +64,7 @@ class DarkTheme extends MyTheme {
   final alertColor = CupertinoColors.destructiveRed;
   final foregroundBrightColor = const Color(0xffDCDDE2);
   final foregroundMenuColor = const Color(0xffDCDDE2);
-  final backgroudMenuColor = CupertinoColors.darkBackgroundGray;
+  final backgroundMenuColor = CupertinoColors.darkBackgroundGray;
   final alphaBackground = const Color(0xff1E1E1E);
   final quoteColor = const Color(0xff3AA510);
   final dividerColor = Colors.grey.withOpacity(0.3);
@@ -101,9 +102,10 @@ class DarkTheme extends MyTheme {
     "purple": CupertinoColors.systemPurple,
     "blue": CupertinoColors.systemBlue,
     "pink": CupertinoColors.systemPink,
-    "orange": myOrange,
     "white": CupertinoColors.white,
     "gray": CupertinoColors.inactiveGray,
+    "light_blue": myLightBlue,
+    "orange": myOrange,
     "default": myOrange,
   };
 
@@ -114,6 +116,35 @@ class DarkTheme extends MyTheme {
 class DarkGreenTheme extends DarkTheme {
   @override
   final primaryColor = const Color(0xff1EBE46);
+
+  @override
+  Color get linkColor => primaryColor;
+
+  @override
+  Color get progressBarColor => primaryColor;
+}
+
+class DarkBlueTheme extends DarkTheme {
+  @override
+  final primaryColor = myLightBlue;
+
+  @override
+  final backgroundColor = const Color(0xff2D3034);
+
+  @override
+  final secondaryBackgroundColor = const Color(0xff1D1F21);
+
+  @override
+  final alphaBackground = const Color(0xff222326);
+
+  @override
+  final postBackgroundColor = const Color(0xff28292D);
+
+  @override
+  final backgroundMenuColor = const Color(0xff282A2E);
+
+  @override
+  final captchaBackground = "#2D3034";
 
   @override
   Color get linkColor => primaryColor;
@@ -160,7 +191,7 @@ class OrangeWhiteTheme extends DarkTheme {
   final foregroundMenuColor = CupertinoColors.black;
 
   @override
-  final backgroudMenuColor = CupertinoColors.white;
+  final backgroundMenuColor = CupertinoColors.white;
 
   @override
   final alphaBackground = const Color(0xffEDEEF3);

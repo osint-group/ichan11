@@ -80,9 +80,9 @@ class HomePageState extends State<HomePage> {
         if (lastScreen['page'] == 'board') {
           Routz.of(context).toBoard(lastScreen['board']);
         } else if (lastScreen['page'] == 'thread') {
-          final ts = ThreadStorage.findById(lastScreen['key']);
-          final thread = Thread.fromThreadStorage(ts);
           try {
+            final ts = ThreadStorage.findById(lastScreen['key']);
+            final thread = Thread.fromThreadStorage(ts);
             await my.repo.on(thread.platform).fetchThreadPosts(thread: thread);
             Routz.of(context).toThread(threadLink: ThreadLink.fromStorage(ts));
           } catch (e) {

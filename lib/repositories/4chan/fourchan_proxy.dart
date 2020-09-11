@@ -153,12 +153,11 @@ class FourchanProxy implements ApiProxy {
 
     if (my.prefs.getBool("async_disabled")) {
       if (!isDebug) {
-        print("ASYNC OFF");
+        print('ASYNC OFF');
       }
       return await fourchanProcessPosts(args);
     } else {
       final result = await compute(fourchanProcessPosts, args);
-      print("Computed");
       return result;
     }
   }

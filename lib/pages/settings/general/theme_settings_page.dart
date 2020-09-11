@@ -35,17 +35,19 @@ class ThemeSettingsPage extends StatelessWidget {
               child: Text("Theme", style: TextStyle(color: my.theme.inactiveColor)),
             ),
             Container(
-              height: 190.0,
+              height: 45.0 * 5,
               child: MenuSelect(
                 labels: const [
                   "Dark Orange",
                   "Dark Green",
+                  "Dark Blue",
                   "Light Orange",
                   "Light Black",
                 ],
                 values: const [
                   "dark",
                   "dark_green",
+                  "dark_blue",
                   "orange_white",
                   "black_white",
                 ],

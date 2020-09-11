@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:iChan/models/thread.dart';
 import 'package:iChan/models/thread_storage.dart';
 import 'package:iChan/services/exports.dart';
+import 'package:iChan/services/htmlz.dart';
 import 'package:iChan/services/my.dart' as my;
 
 class HistoryList extends StatelessWidget {
@@ -156,7 +157,7 @@ class HistoryRow extends StatelessWidget {
                     ),
                     Flexible(
                       child: Text(
-                        item.threadTitle,
+                        Htmlz.unescape(item.threadTitle),
                         softWrap: false,
                         overflow: TextOverflow.fade,
                         style: TextStyle(
