@@ -2,7 +2,21 @@
 
 Open source client for popular imageboards: 4chan.org and 2ch.hk.
 
-How to compile:
+## Builds
+
+Android APK ARM v8: 
+https://zchan.app/download/android/iChan.apk
+
+Android APK ARM v7: 
+https://zchan.app/download/android/iChan-x32.apk
+
+iOS IPA:
+https://zchan.app/download/iChan.ipa
+
+If you don't have jailbreak, you can use altstore.io to install it
+
+## How to compile
+
 1. Install Flutter: https://flutter.dev/docs/get-started/install
 2. Clone this repo: `git clone https://github.com/Zchandev/iChan.git`
 3. Make sure you changed directory: `cd iChan`
