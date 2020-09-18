@@ -2,18 +2,25 @@
 
 Open source client for popular imageboards: 4chan.org and 2ch.hk.
 
-## Builds
+## Builds for iOS
+
+iOS IPA:
+https://zchan.app/download/iChan.ipa
+
+If you don't have jailbreak, you can use altstore.io to install it
+
+No testflight yet.
+
+## Builds for Android
+
+Google Play:
+https://play.google.com/store/apps/details?id=com.zchandev.iChan
 
 Android APK ARM v8: 
 https://zchan.app/download/android/iChan.apk
 
 Android APK ARM v7: 
 https://zchan.app/download/android/iChan-x32.apk
-
-iOS IPA:
-https://zchan.app/download/iChan.ipa
-
-If you don't have jailbreak, you can use altstore.io to install it
 
 ## How to compile
 
