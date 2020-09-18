@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iChan/blocs/blocs.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iChan/models/thread.dart';
 import 'package:iChan/models/thread_storage.dart';
@@ -34,8 +33,8 @@ class HomePageState extends State<HomePage> {
       final data = {'page': 'categories'};
       my.prefs.put('last_screen', data);
     } else if (index == 1) {
-      my.favoriteBloc.add(FavoriteUpdated());
-      my.favoriteBloc.add(FavoriteRefreshAllAuto());
+      my.favoriteBloc.favoriteUpdated();
+      my.favoriteBloc.refreshAuto();
 
       final data = {'page': 'favorites'};
       my.prefs.put('last_screen', data);
@@ -89,6 +88,8 @@ class HomePageState extends State<HomePage> {
             print("openLastScreen: thread not loaded: $e");
           }
         }
+
+        my.favoriteBloc.refreshAuto();
       });
     }
   }
@@ -103,9 +104,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     my.contextTools.init(context);
 
-    final backgroundColor = my.prefs.isTranslucent
-        ? my.theme.bottomBarBackground.withOpacity(Consts.navbarOpacity)
-        : my.theme.bottomBarBackground;
+    final backgroundColor = my.theme.bottomBarBackground.withOpacity(Consts.navbarOpacity);
 
     return ValueListenableBuilder(
       valueListenable: my.prefs.box.listenable(keys: ['activity_disabled']),

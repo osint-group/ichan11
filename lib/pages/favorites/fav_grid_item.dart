@@ -45,7 +45,7 @@ class FavGridItem extends StatelessWidget {
 
         final maxLength = my.contextTools.isVerySmallHeight ? 17 : 30;
 
-        final favTitle = Helper.takeFirst(fav.shortTitle, maxLength, dots: "...");
+        final favTitle = fav.shortTitle.takeFirst(maxLength, dots: "...");
 
         return GestureDetector(
           behavior: HitTestBehavior.translucent,

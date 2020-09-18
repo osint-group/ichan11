@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iChan/services/my.dart' as my;
+import 'package:iChan/widgets/my/my_cupertino_page_route.dart';
 
 class MenuItem extends StatelessWidget {
   const MenuItem({
@@ -32,7 +33,7 @@ class MenuItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => page));
+        Navigator.push(context, MyCupertinoPageRoute(builder: (context) => page));
       },
       child: Container(
           decoration:

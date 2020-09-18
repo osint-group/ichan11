@@ -1,11 +1,10 @@
 import 'package:iChan/models/board.dart';
-import 'package:iChan/models/post.dart';
 import 'package:iChan/models/thread_storage.dart';
 import 'package:iChan/services/enums.dart';
 import 'package:iChan/services/my.dart' as my;
 
 class Migration {
-  static const current = 6;
+  static const current = 7;
 
   static Future start() async {
     if (my.prefs.getInt('migration') == 0) {
@@ -64,6 +63,8 @@ class Migration {
     }
 
     if (my.prefs.getInt('migration') == 4) {
+      // print("NOT NOW");
+      // return;
       final favBoards = my.prefs.get("boards");
       if (favBoards != null) {
         final Map<String, dynamic> fetchedBoards = await my.repo.on(Platform.dvach).fetchBoards();
@@ -142,40 +143,59 @@ class Migration {
     }
 
     if (my.prefs.getInt('migration') == 5) {
-      final myPostsList = await my.db.getMyPosts();
-      await my.posts.box.clear();
-      for (final post in myPostsList) {
-        final platform = post.platform == Platform.all ? Platform.dvach : post.platform;
+      // SQLite removed
+      // Some users would be fucked up
+      // Sad for them
 
-        final newPost = Post(
-          body: post.body,
-          threadId: post.threadId,
-          outerId: post.outerId,
-          timestamp: post.timestamp,
-          boardName: post.boardName,
-          platform: platform,
-          title: '',
-          name: post.name ?? '',
-          tripcode: post.tripcode ?? '',
-          isMine: post.my,
-          isToMe: false,
-          isUnread: false,
-          isSage: post.sage,
-          isOp: post.op,
-          counter: post.counter ?? 0,
-          mediaFiles: [],
-        );
+      // final myPostsList = await my.db.getMyPosts();
+      // await my.posts.box.clear();
+      // for (final post in myPostsList) {
+      //   final platform = post.platform == Platform.all ? Platform.dvach : post.platform;
 
-        newPost.extras = {};
-        newPost.replies = [];
-        newPost.repliesParent = [];
-        my.posts.box.put(newPost.toKey, newPost);
-      }
+      //   final newPost = Post(
+      //     body: post.body,
+      //     threadId: post.threadId,
+      //     outerId: post.outerId,
+      //     timestamp: post.timestamp,
+      //     boardName: post.boardName,
+      //     platform: platform,
+      //     title: '',
+      //     name: post.name ?? '',
+      //     tripcode: post.tripcode ?? '',
+      //     isMine: post.my,
+      //     isToMe: false,
+      //     isUnread: false,
+      //     isSage: post.sage,
+      //     isOp: post.op,
+      //     counter: post.counter ?? 0,
+      //     mediaFiles: [],
+      //   );
 
-      final length = my.posts.values.length;
-      my.prefs.setStats('posts_created', length);
+      //   newPost.extras = {};
+      //   newPost.replies = [];
+      //   newPost.repliesParent = [];
+      //   my.posts.box.put(newPost.toKey, newPost);
+      // }
+
+      // final length = my.posts.values.length;
+      // my.prefs.setStats('posts_created', length);
 
       my.prefs.put('migration', 6);
     }
+
+    if (my.prefs.getInt('migration') == 6) {
+      final replies = my.posts.replies.length;
+      my.prefs.setStats('replies_received', replies);
+
+      final favsRefreshed = (my.prefs.stats['threads_clicked'] * 0.75).round();
+      my.prefs.setStats('favs_refreshed', favsRefreshed);
+
+      final mediaViews = (my.prefs.stats['threads_clicked'] * 0.55).round();
+      my.prefs.setStats('media_views', mediaViews);
+
+      my.prefs.put('migration', 7);
+    }
   }
+
+  // Don't forget to edit current;
 }

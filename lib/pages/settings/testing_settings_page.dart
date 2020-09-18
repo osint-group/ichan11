@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:iChan/blocs/thread/event.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/services/my.dart' as my;
@@ -55,6 +56,7 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
               field: 'thread_cache_disabled',
               onChanged: (val) {
                 my.threadBloc.add(const ThreadCacheDisabled());
+                my.prefs.put("thread_cache_disabled", val);
               },
               defaultValue: false,
             ),
@@ -63,27 +65,12 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
               field: "async_disabled",
               defaultValue: false,
             ),
-            // const MenuSwitch(
-            //   label: "Pre-render posts",
-            //   field: "prerender",
-            //   defaultValue: false,
-            // ),
-            MenuTextField(
-              label: "Gestures sensivity (%)",
-              boxField: "gestures_sensivity",
-              value: "100.0",
-              onChanged: (val) {
-                final parsed = double.tryParse(val) ?? 100.0;
-                my.prefs.put("gestures_sensivity", parsed);
-              },
-            ),
             MenuTextField(
               label: "Top menu margin",
               boxField: "menu_margin",
-              value: "40.0",
-              onChanged: (val) {
-                final parsed = double.tryParse(val) ?? 40.0;
-                my.prefs.put("menu_margin", parsed);
+              onSubmitted: (val) {
+                final parsed = double.tryParse(val) ?? my.prefs.get('menu_margin');
+                my.prefs.put('menu_margin', parsed);
               },
             ),
             menuDivider,
@@ -108,7 +95,7 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
                 height: 600,
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding),
-                  // reverse: true,
+                  reverse: true,
                   itemCount: Log.length,
                   itemBuilder: (context, index) {
                     return Text(Log.all[index]);

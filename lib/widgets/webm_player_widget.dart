@@ -1,16 +1,23 @@
-// import 'dart:typed_data';
-
-// import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iChan/blocs/player_bloc.dart';
 
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:iChan/models/media.dart';
-// import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:iChan/services/extensions.dart';
+
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// class WebmPlayerWidget extends StatelessWidget {
+//   const WebmPlayerWidget({key, this.media}) : super(key: key);
+
+//   final Media media;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return Container();
+//   }
+// }
 
 class WebmPlayerWidget extends StatefulWidget {
   const WebmPlayerWidget({Key key, this.media}) : super(key: key);
@@ -21,11 +28,9 @@ class WebmPlayerWidget extends StatefulWidget {
   WebmPlayerState createState() => WebmPlayerState();
 }
 
-class WebmPlayerState extends State<WebmPlayerWidget>
-    with WidgetsBindingObserver {
+class WebmPlayerState extends State<WebmPlayerWidget> with WidgetsBindingObserver {
   VlcPlayerController playerController;
   double sliderValue = 0.0;
-  // Timer timer;
 
   String get url => widget.media.url;
 

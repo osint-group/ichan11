@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:iChan/blocs/thread/event.dart';
+// import 'package:iChan/db/app_db.dart';
 import 'package:iChan/models/post.dart';
 import 'package:iChan/models/thread.dart';
 import 'package:iChan/models/thread_storage.dart';
@@ -246,19 +247,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Future<String> _calcPostcount() async {
-    final postsLength = my.prefs.stats['posts_created'] ?? 0;
-    final threadsVisited = my.prefs.stats['threads_visited'] ?? 0;
-    final threadsClicked = my.prefs.stats['threads_clicked'] ?? 0;
-    final threadsCreated = my.prefs.stats['threads_created'] ?? 0;
-
     const version = "iChan";
 
     final stats = """/postcount
 
-  ${'stats.threads_visited'.tr()} $threadsVisited
-  ${'stats.threads_clicked'.tr()} $threadsClicked
-  ${'stats.threads_created'.tr()} $threadsCreated
-  ${'stats.posts_created'.tr()} $postsLength
+  ${'stats.threads_visited'.tr()} ${my.prefs.stats['threads_visited']}
+  ${'stats.threads_clicked'.tr()} ${my.prefs.stats['threads_clicked']}
+  ${'stats.threads_created'.tr()} ${my.prefs.stats['threads_created']}
+  ${'stats.posts_created'.tr()} ${my.prefs.stats['posts_created']}
+  ${'stats.replies_received'.tr()} ${my.prefs.stats['replies_received']}
+  ${'stats.media_views'.tr()} ${my.prefs.stats['media_views']}
+  ${'stats.favs_refreshed'.tr()} ${my.prefs.stats['favs_refreshed']}
+  ${'stats.hours_spent'.tr()} ${my.prefs.stats['visits'] * 3 ~/ 60}
 
   [i]${'stats.sent_from'.tr()} $version ${Consts.version}[/i]""";
 
@@ -297,8 +297,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           name: 'reply',
           parameters: {'threadId': payload['threadId'], 'boardName': payload['boardName']});
     }
-
-    // final cookies = await getCookies(payload);
 
     Map<String, dynamic> response;
     try {

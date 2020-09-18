@@ -122,8 +122,11 @@ class ThreadStorage extends HiveObject {
   @HiveField(18)
   String savedJson;
 
-  Status _status;
+  @HiveField(19)
   int refreshedAt;
+
+  Status _status;
+
   String _shortTitle;
 
   static ThreadStorage find({String threadId, String boardName, Platform platform}) {

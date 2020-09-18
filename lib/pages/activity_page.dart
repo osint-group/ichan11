@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iChan/blocs/favorite_bloc.dart';
 import 'package:iChan/blocs/thread/data.dart';
 import 'package:iChan/models/post.dart';
 import 'package:iChan/models/thread.dart';
@@ -81,6 +80,7 @@ class _ActivityPageState extends State<ActivityPage> {
     final divider = Divider(
       color: my.theme.dividerColor,
       height: 1,
+      thickness: 1,
     );
 
     return HeaderNavbar(
@@ -109,7 +109,7 @@ class _ActivityPageState extends State<ActivityPage> {
             } else if (mode == "history") {
               Interactive(context).modalDelete(text: "Clean history").then((confirmed) {
                 if (confirmed) {
-                  my.favoriteBloc.add(const FavoriteClearVisited());
+                  my.favoriteBloc.clearVisited();
                 }
               });
             }
@@ -192,7 +192,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
                                 return Column(
                                   children: [
-                                    divider,
+                                    if (index == 0) divider,
                                     PostItem(
                                       post: post,
                                       threadData: threadData,
@@ -252,7 +252,12 @@ class _ActivityPageState extends State<ActivityPage> {
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 2.5, horizontal: 5.0),
-                                  child: HistoryRow(item: items[index]),
+                                  child: Column(
+                                    children: [
+                                      HistoryRow(item: items[index]),
+                                      divider,
+                                    ],
+                                  ),
                                 );
                               },
                               childCount: items.length,
@@ -270,6 +275,7 @@ class _ActivityPageState extends State<ActivityPage> {
   ThreadData buildThreadData(Post post) {
     post.replies ??= [];
     post.mediaFiles ??= [];
+    post.repliesParent ??= [];
     final threadData = my.threadBloc.getThreadData(post.toThreadKey);
 
     if (threadData != null) {
@@ -290,6 +296,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
     _threadData.thread.mediaFiles += post.mediaFiles;
 
+    assert(post.repliesParent != null);
     for (final postId in post.repliesParent) {
       final _post = my.posts.get("${post.platform.toString()}-${post.boardName}-$postId");
       if (_post != null) {

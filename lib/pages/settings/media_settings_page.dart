@@ -75,7 +75,7 @@ class _MediaSettingsPageState extends State<MediaSettingsPage> {
             label: "Medium image size (mb)",
             boxField: "medium_image_size",
             enabled: my.prefs.getBool('media_color_enabled'),
-            onChanged: (String val) {
+            onSubmitted: (String val) {
               fieldChanged("medium_image_size", val);
               return false;
             },
@@ -84,7 +84,7 @@ class _MediaSettingsPageState extends State<MediaSettingsPage> {
             label: "Big image size (mb)",
             boxField: "big_image_size",
             enabled: my.prefs.getBool('media_color_enabled'),
-            onChanged: (String val) {
+            onSubmitted: (String val) {
               fieldChanged("big_image_size", val);
               return false;
             },
@@ -93,7 +93,7 @@ class _MediaSettingsPageState extends State<MediaSettingsPage> {
             label: "Medium video size (mb)",
             boxField: "medium_video_size",
             enabled: my.prefs.getBool('media_color_enabled'),
-            onChanged: (String val) {
+            onSubmitted: (String val) {
               fieldChanged("medium_video_size", val);
               return false;
             },
@@ -102,7 +102,7 @@ class _MediaSettingsPageState extends State<MediaSettingsPage> {
             label: "Big video size (mb)",
             boxField: "big_video_size",
             enabled: my.prefs.getBool('media_color_enabled'),
-            onChanged: (String val) {
+            onSubmitted: (String val) {
               fieldChanged("big_video_size", val);
               return false;
             },

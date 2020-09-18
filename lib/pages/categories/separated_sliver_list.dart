@@ -19,7 +19,11 @@ class SeparatedSliverList extends StatelessWidget {
           if (index.isEven) {
             return SizedBox(height: 55, child: items[itemIndex]);
           }
-          return Divider(height: 1, color: my.theme.dividerColor);
+          return Divider(
+            height: 1,
+            color: my.theme.dividerColor,
+            thickness: 1,
+          );
         },
         semanticIndexCallback: (Widget widget, int localIndex) {
           return localIndex.isEven ? localIndex ~/ 2 : null;

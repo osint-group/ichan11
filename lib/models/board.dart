@@ -13,6 +13,7 @@ class Board extends HiveObject {
     this.category = '',
     this.bumpLimit = 0,
     this.isFavorite = false,
+    this.isNsfw = false,
   });
 
   factory Board.fromMap(Map<String, dynamic> json) {
@@ -22,6 +23,7 @@ class Board extends HiveObject {
       category: json['category'] as String,
       bumpLimit: json['bump_limit'] as int,
       platform: json['platform'],
+      isNsfw: json['nsfw'],
     );
   }
 
@@ -42,6 +44,9 @@ class Board extends HiveObject {
 
   @HiveField(5)
   bool isFavorite;
+
+  @HiveField(6)
+  bool isNsfw;
 
   bool equalsTo(Board otherBoard) {
     return id == otherBoard.id && platform == otherBoard.platform;

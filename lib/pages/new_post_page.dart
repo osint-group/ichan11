@@ -15,7 +15,6 @@ import 'package:iChan/services/exports.dart';
 import 'package:iChan/services/file_tools.dart';
 import 'package:iChan/ui/haptic.dart';
 import 'package:iChan/services/my.dart' as my;
-import 'package:iChan/widgets/fade_route.dart';
 import 'package:iChan/widgets/media/rounded_image.dart';
 import 'package:iChan/widgets/media/zoomable_image.dart';
 
@@ -54,11 +53,12 @@ class FormUI {
   Platform get platform => board?.platform ?? thread.platform;
 
   void readDefaults() {
-    assert(fav != null);
     if (isNewThread) {
       postTitle = my.prefs.getString('thread_title');
       postBody = my.prefs.getString('thread_body');
     } else {
+      assert(thread != null);
+
       if (fav?.extras['op'] != null) {
         isOp = fav.extras['op'];
       } else {
@@ -251,6 +251,8 @@ class NewPostPageState extends State<NewPostPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    _showHelp(context);
+
     return BlocConsumer<PostBloc, PostState>(
       listener: (context, state) {
         if (state is PostCreated) {
@@ -587,6 +589,17 @@ class NewPostPageState extends State<NewPostPage> with WidgetsBindingObserver {
       form.updateDefaults();
     }
   }
+
+  void _showHelp(BuildContext context) {
+    if (my.prefs.getBool('help.post_form')) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Interactive(context).message(title: 'help.tip'.tr(), content: 'help.post_form'.tr());
+      my.prefs.put('help.post_form', true);
+    });
+  }
 }
 
 class SendButton extends StatefulWidget {
@@ -619,7 +632,7 @@ class _SendButtonState extends State<SendButton> {
   }
 
   void startCounter() {
-    timeDiff = Helper.timeDiffInSeconds(lastPostTimestamp);
+    timeDiff = lastPostTimestamp.timeDiffInSeconds;
 
     if (timeDiff <= cooldown) {
       Future.delayed(1.seconds).then((value) {
@@ -720,9 +733,7 @@ class FormAttachments extends StatelessWidget {
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
-                              Navigator.of(context).push(FadeRoute(
-                                page: ZoomableImage(file: files[index]),
-                              ));
+                              Routz.of(context).fadeToPage(ZoomableImage(file: files[index]));
                             },
                             child: thumb,
                           ))),

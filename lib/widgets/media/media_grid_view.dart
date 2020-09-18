@@ -61,7 +61,7 @@ class MediaGridView extends HookWidget {
     final scrollOffset = scrollIndex <= 0 ? 0.0 : calcScrollOffset(context);
     final controller = useScrollController(initialScrollOffset: scrollOffset);
 
-    final padding = my.prefs.isTranslucent && selectable == null
+    final padding = selectable == null
         ? (my.contextTools.hasHomeButton ? regularPadding : notchPadding)
         : const EdgeInsets.only(top: Consts.topPadding / 4);
 

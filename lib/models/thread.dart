@@ -4,7 +4,7 @@ import 'package:iChan/models/platform.dart';
 import 'package:iChan/models/thread_storage.dart';
 import 'package:iChan/models/media.dart';
 import 'package:iChan/services/consts.dart';
-import 'package:iChan/services/helper.dart';
+import 'package:iChan/services/extensions.dart';
 import 'package:iChan/services/my.dart' as my;
 import 'package:iChan/services/htmlz.dart';
 
@@ -59,7 +59,7 @@ class Thread {
       json['board'] as String,
       json['subject'] as String,
       json['platform'],
-      json['comment'] as String,
+      (json['comment'] as String) ?? '',
       json['timestamp'] as int,
       json['posts_count'] as int,
       json['files_count'] as int,
@@ -104,12 +104,12 @@ class Thread {
   String get toJsonId => "${platform.toString()}-$boardName-$outerId";
 
   String get parsedBody {
-    _parsedBody ??= Htmlz.parseBody(body);
+    _parsedBody ??= Htmlz.parseBody(body ?? '');
     return _parsedBody;
   }
 
   String get cleanBody {
-    _cleanBody ??= Htmlz.cleanTags(body);
+    _cleanBody ??= Htmlz.cleanTags(body ?? '');
     return _cleanBody;
   }
 
@@ -124,8 +124,8 @@ class Thread {
     }
 
     if (_isTitleInBody == null) {
-      final String _body = Helper.takeFirst(cleanBody, 20).replaceAll(" ", '');
-      final String _title = Helper.takeFirst(Htmlz.cleanTags(title), 20).replaceAll(" ", '');
+      final String _body = cleanBody.takeFirst(20).replaceAll(" ", '');
+      final String _title = Htmlz.cleanTags(title).takeFirst(20).replaceAll(" ", '');
       _isTitleInBody = _body.startsWith(_title);
     }
 
@@ -175,11 +175,14 @@ class Thread {
   }
 
   String datetime({bool year = true, bool compact = false}) {
-    return Helper.formatDate(timestamp * 1000, year: year, compact: compact);
+    return (timestamp * 1000).formatDate(year: year, compact: compact);
   }
 
   String timeAgo({bool year = true, bool compact = false}) =>
-      Helper.timestampToHuman(timestamp * 1000, year: year, compact: compact);
+      (timestamp * 1000).toHumanDate(year: year, compact: compact);
+
+  @override
+  String toString() => "Thread ${title}, files: ${mediaFiles?.length}";
 }
 
 class ThreadLink {

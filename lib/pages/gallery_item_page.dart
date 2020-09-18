@@ -16,9 +16,6 @@ import 'package:iChan/widgets/my/my_dismissible.dart';
 import 'package:iChan/widgets/native_player_widget.dart';
 import 'package:iChan/widgets/webm_player_widget.dart';
 
-// Map<String, GlobalKey<ExtendedImageGestureState>> keysList = {};
-
-// ignore: must_be_immutable
 class GalleryItemPage extends StatefulWidget {
   const GalleryItemPage({
     Key key,
@@ -74,7 +71,7 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
   Post get post => threadData.posts.firstWhere((e) => e.outerId == currentMedia.postId);
 
   Widget build(BuildContext context) {
-    // print("scrolling to post, ${widget.media.url}, ${currentMedia.url}");
+    my.prefs.incrStats('media_views');
 
     return Stack(
       alignment: Alignment.topCenter,
@@ -87,6 +84,9 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
             onPageChanged: (index) {
               currentIndex.value = index;
               toResume = false;
+
+              my.prefs.incrStats('media_views');
+
               // check video and stop it
               final media = widget.mediaList.elementAtOrNull(index);
               if (media != null && media.isVideo) {
@@ -394,7 +394,7 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
         },
         child: Container(
           height: _height,
-          color: my.theme.backgroundColor,
+          color: my.theme.backgroundMenuColor,
           padding: EdgeInsets.only(bottom: _height - _height * 2 / 3),
           width: context.screenWidth,
           child: AnimatedOpacity(
@@ -420,7 +420,7 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
     return Container(
       key: ValueKey(post.outerId),
       height: context.screenHeight / 3,
-      color: my.theme.backgroundColor,
+      color: my.theme.backgroundMenuColor,
       padding: const EdgeInsets.only(top: 50.0),
       child: SingleChildScrollView(
         child: PostItem(
@@ -437,13 +437,13 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
     Widget result;
 
     if (media.isVideo) {
+      // final player = NativePlayerWidget(key: Key("mp4-${media.url}"), media: media);
       final player = (media.ext == 'webm' && isIos)
           ? WebmPlayerWidget(key: Key("webm-${media.url}"), media: media)
           : NativePlayerWidget(key: Key("mp4-${media.url}"), media: media);
 
       result = MyDismissible(
         key: UniqueKey(),
-        // enabledListener: isEnabled,
         direction: DismissDirection.vertical,
         movementDuration: const Duration(milliseconds: 500),
         resizeDuration: const Duration(microseconds: 1),
@@ -577,7 +577,7 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
     hideMenuBar(delayed: my.contextTools.hasHomeButton);
 
     if (my.prefs.getBool('disable_autoturn')) {
-      Helper.setAutoturn('auto');
+      System.setAutoturn('auto');
     }
 
     if (my.prefs.getBool('swipe_bottom_for_info')) {
@@ -585,6 +585,9 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
     }
 
     final index = widget.mediaList.indexWhere((e) => e.url == widget.media.url);
+    if (index == -1) {
+      print("widget.mediaList = ${widget.mediaList}");
+    }
     assert(index != -1);
 
     currentIndex.value = index;
@@ -629,7 +632,7 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
     }
 
     if (my.prefs.getBool('disable_autoturn')) {
-      Helper.setAutoturn('portrait');
+      System.setAutoturn('portrait');
     }
 
     showMenuBar();
@@ -736,10 +739,10 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
       final findResult = await Interactive(context).modal(findSheet);
       if (findResult == "find in google") {
         final url = "https://www.google.com/searchbyimage?&image_url=${media.url}";
-        Helper.launchUrl(url);
+        System.launchUrl(url);
       } else if (findResult == "find in yandex") {
         final url = "https://yandex.ru/images/search?url=${media.url}&rpt=imageview";
-        Helper.launchUrl(url);
+        System.launchUrl(url);
       }
     } else if (result == "go to post") {
       Haptic.mediumImpact();
@@ -775,7 +778,7 @@ class _GalleryItemPageState extends State<GalleryItemPage> with MediaActions {
       }
       try {
         my.cacheManager
-            .getSingleFile(media.url, headers: Helper.headersForPath(media.path))
+            .getSingleFile(media.url, headers: System.headersForPath(media.path))
             .then((value) {
           media.isCached = true;
         });

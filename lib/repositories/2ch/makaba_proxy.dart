@@ -30,18 +30,21 @@ class MakabaProxy implements ApiProxy {
     final json = await api.fetchBoards();
     final List<Board> boards = [];
     final List<String> categories = [];
-    final String _domain = api.domain;
 
     json.forEach((category, boardsGroup) {
-      if (category == 'Техника и софт' ||
-          _domain.contains('2ch') == false ||
-          (category != "Взрослым" && category != 'Пользовательские')) {
+      final regularFilter = category != "Взрослым" && category != 'Пользовательские';
+      final nsfwFilter = my.prefs.getBool('dvach_nsfw') && category == 'Взрослым';
+      final userboardFilter =
+          my.prefs.getBool('dvach_userboards') && category == 'Пользовательские';
+
+      if (regularFilter || nsfwFilter || userboardFilter) {
         categories.add(category);
       }
 
       boardsGroup.forEach((board) {
         final Map<String, dynamic> _board = board as Map<String, dynamic>;
         _board['platform'] = Platform.dvach;
+        _board['nsfw'] = category == 'Взрослым';
         boards.add(Board.fromMap(_board));
       });
     });
@@ -78,6 +81,10 @@ class MakabaProxy implements ApiProxy {
     // } else {
     //   return await compute(processThreads, undecoded);
     // }
+  }
+
+  Future<Map<String, dynamic>> deletePost(Map<String, dynamic> payload) async {
+    return Future.value({});
   }
 
   Future<Map<String, dynamic>> fetchThreadPosts({Thread thread, String savedJson = ''}) async {
@@ -210,7 +217,7 @@ class MakabaProxy implements ApiProxy {
       'op_mark': payload['isOp'] ? '1' : '',
     };
 
-    if (my.prefs.showCaptcha && payload['g-recaptcha-response'] != null) {
+    if (payload['g-recaptcha-response'] != null && payload['g-recaptcha-response'].isNotEmpty) {
       formData["captcha_type"] = "recaptcha";
       formData["captcha-key"] = payload['captcha-key'];
       formData["g-recaptcha-response"] = payload['g-recaptcha-response'];

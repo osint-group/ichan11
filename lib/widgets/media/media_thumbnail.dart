@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iChan/models/media.dart';
 import 'package:iChan/services/enums.dart';
-import 'package:iChan/services/helper.dart';
+import 'package:iChan/services/system.dart';
 import 'package:iChan/services/my.dart' as my;
 import 'package:iChan/widgets/media/rounded_image.dart';
 
@@ -40,7 +40,7 @@ class MediaThumbnail extends StatelessWidget {
     final image = ExtendedNetworkImageProvider(
       media.thumbnailUrl,
       cache: true,
-      headers: Helper.headersForPath(media.path),
+      headers: System.headersForPath(media.path),
     );
 
     final webmBorder = Border.all(

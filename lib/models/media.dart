@@ -131,6 +131,8 @@ class Media extends HiveObject {
   bool get isImage => !isVideo;
   bool get isWide => ratio >= 1.5;
 
+  bool get isSticker => path.startsWith('/stickers');
+
   Future<void> readExif() async {
     if (isVideo) {
       return Future.value();

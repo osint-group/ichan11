@@ -92,9 +92,10 @@ class _GalleryMediaState extends State<GalleryMedia> with MediaActions {
 
   @override
   Widget build(BuildContext context) {
-    final heroTag = [Origin.board, Origin.activity].contains(widget.origin)
-        ? UniqueKey().toString()
-        : widget.media.thumbnailUrl;
+    final heroTag =
+        [Origin.board, Origin.activity].contains(widget.origin) || widget.media.isSticker
+            ? UniqueKey().toString()
+            : widget.media.thumbnailUrl;
 
     return GestureDetector(
       onLongPress: () {

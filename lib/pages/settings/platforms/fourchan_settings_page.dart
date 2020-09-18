@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:iChan/pages/settings/platforms_links_page.dart';
 import 'package:iChan/repositories/4chan/fourchan_api.dart';
 import 'package:iChan/services/exports.dart';
@@ -53,12 +54,13 @@ class FourchanSettingsPage extends HookWidget {
                   my.prefs.put('platforms', platforms.toList());
                 }
                 my.categoryBloc.setPlatform();
+                my.prefs.put("fourchan_enabled", val);
               },
             ),
             MenuTextField(
               label: 'Domain',
               boxField: 'fourchan_domain',
-              onChanged: (val) {
+              onSubmitted: (val) {
                 if (val.isEmpty) {
                   my.prefs.put('fourchan_domain', FourchanApi.defaultDomain);
                   my.fourchanApi.domain = setDomain(FourchanApi.defaultDomain);
@@ -68,34 +70,88 @@ class FourchanSettingsPage extends HookWidget {
                   my.prefs.delete('json_cache');
                 }
                 my.categoryBloc.fetchBoards(Platform.fourchan);
-                return false;
               },
             ),
             menuDivider,
-            MenuSwitch(
-              label: 'Passcode enabled',
-              field: 'fourchan_passcode_enabled',
+            if (!my.prefs.isSafe) ...[
+              MenuSwitch(
+                label: 'NSFW boards',
+                field: 'fourchan_nsfw',
+                defaultValue: false,
+                onChanged: (val) async {
+                  if (val == true) {
+                    final actions = [
+                      ActionSheet(text: "yes".tr(), value: "yes"),
+                      ActionSheet(text: "no".tr(), value: "no")
+                    ];
+
+                    final result = await Interactive(context)
+                        .alert(actions, content: "modals.age_confirm".tr());
+
+                    if (result == "yes") {
+                      my.prefs.put('fourchan_nsfw', true);
+                    }
+                  } else {
+                    my.prefs.put('fourchan_nsfw', false);
+                  }
+
+                  if (my.categoryBloc.selectedPlatform == Platform.fourchan) {
+                    my.categoryBloc.fetchBoards(Platform.fourchan);
+                  }
+
+                  return false;
+                },
+              ),
+            ],
+            const MenuSwitch(
+              label: 'Proxy enabled',
+              field: 'fourchan_proxy_enabled',
               defaultValue: false,
-              onChanged: (v) {
-                my.prefs.put('fourchan_passcode_enabled', v);
-                my.contextTools.init(context);
-                return false;
-              },
             ),
             ValueListenableBuilder(
-              valueListenable: my.prefs.box.listenable(keys: ['fourchan_passcode_enabled']),
+              valueListenable: my.prefs.box.listenable(keys: ['fourchan_proxy_enabled']),
               builder: (BuildContext context, dynamic value, Widget child) {
-                if (my.prefs.getBool('fourchan_passcode_enabled')) {
-                  return MenuTextField(
-                    label: 'Code',
-                    boxField: 'fourchan_passcode',
-                    enabled: my.prefs.getBool('fourchan_passcode_enabled'),
+                if (my.prefs.getBool('fourchan_proxy_enabled')) {
+                  return Column(
+                    children: const [
+                      MenuTextField(
+                        label: 'Address:port',
+                        boxField: 'fourchan_proxy',
+                      ),
+                      MenuTextField(
+                        label: 'Boards',
+                        boxField: 'fourchan_proxy_boards',
+                      ),
+                    ],
                   );
-                } else {
-                  return Container();
                 }
+                return Container();
               },
             ),
+            // MenuSwitch(
+            //   label: 'Passcode enabled',
+            //   field: 'fourchan_passcode_enabled',
+            //   defaultValue: false,
+            //   onChanged: (v) {
+            //     my.prefs.put('fourchan_passcode_enabled', v);
+            //     my.contextTools.init(context);
+            //     return false;
+            //   },
+            // ),
+            // ValueListenableBuilder(
+            //   valueListenable: my.prefs.box.listenable(keys: ['fourchan_passcode_enabled']),
+            //   builder: (BuildContext context, dynamic value, Widget child) {
+            //     if (my.prefs.getBool('fourchan_passcode_enabled')) {
+            //       return MenuTextField(
+            //         label: 'Code',
+            //         boxField: 'fourchan_passcode',
+            //         enabled: my.prefs.getBool('fourchan_passcode_enabled'),
+            //       );
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
           ],
         ),
       ),

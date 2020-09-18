@@ -112,6 +112,15 @@ class ThreadReportPressed extends ThreadEvent {
   List<Object> get props => [payload];
 }
 
+class ThreadDeletePressed extends ThreadEvent {
+  const ThreadDeletePressed({this.post});
+
+  final Post post;
+
+  @override
+  List<Object> get props => [post];
+}
+
 class ThreadSearchStarted extends ThreadEvent {
   const ThreadSearchStarted({
     @required this.thread,

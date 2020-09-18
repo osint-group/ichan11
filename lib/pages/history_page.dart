@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iChan/blocs/favorite_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:iChan/models/thread.dart';
 import 'package:iChan/models/thread_storage.dart';
@@ -36,8 +35,11 @@ class HistoryPage extends StatelessWidget {
               child: ListView.separated(
                 itemCount: items.length,
                 padding: Consts.horizontalPadding,
-                separatorBuilder: (context, index) =>
-                    Divider(height: 1, color: my.theme.dividerColor),
+                separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  color: my.theme.dividerColor,
+                  thickness: 1,
+                ),
                 itemBuilder: (context, index) {
                   return SafeArea(
                       top: index == 0,
@@ -59,7 +61,7 @@ class HistoryPage extends StatelessWidget {
           onTap: () {
             Interactive(context).modalDelete().then((confirmed) {
               if (confirmed) {
-                my.favoriteBloc.add(const FavoriteClearVisited());
+                my.favoriteBloc.clearVisited();
               }
             });
           },
@@ -111,7 +113,7 @@ class HistoryRow extends StatelessWidget {
               ),
             ),
             onTap: () {
-              my.favoriteBloc.add(FavoriteClearVisited(fav: item));
+              my.favoriteBloc.clearVisited(item);
             },
           );
         },
@@ -122,7 +124,7 @@ class HistoryRow extends StatelessWidget {
         onLongPress: () {
           Interactive(context).modalDelete().then((confirmed) {
             if (confirmed) {
-              my.favoriteBloc.add(FavoriteClearVisited(fav: item));
+              my.favoriteBloc.clearVisited(item);
             }
           });
         },

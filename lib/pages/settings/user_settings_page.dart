@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iChan/services/consts.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/widgets/menu/menu.dart';
@@ -10,55 +11,75 @@ class UserSettingsPage extends StatelessWidget {
 
   static const header = 'Stats';
 
-  Future<Map> getData() async {
-    final posts = await my.db.getMyPosts();
-    return {'posts': posts};
-  }
-
   Widget build(BuildContext context) {
-    // final threads = my.favs.box.values;
-    // final threadsVisited = threads.length;
-    // final threadsCreated =
-    // threads.where((e) => e.opCookie?.isNotEmpty == true).length;
-
-    // final threadsClicked = threads.sumBy((e) => e?.visits ?? 0);
-
-    final Map<String, int> stats = my.prefs.stats;
-
     return HeaderNavbar(
       backgroundColor: my.theme.secondaryBackgroundColor,
       middleText: header,
       previousPageTitle: "Settings",
-      child: FutureBuilder(
-        future: getData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
+      child: ValueListenableBuilder(
+          valueListenable: my.prefs.box.listenable(keys: ['stats']),
+          builder: (context, val, widget) {
+            final boxField = my.favs.values.isEmpty ? '' : null;
+
             return ListView(
               padding: const EdgeInsets.only(top: Consts.topPadding * 3),
               children: [
                 MenuTextField(
                   label: "Threads visited",
-                  value: stats['threads_visited'].toString(),
+                  boxField: boxField,
+                  value: my.prefs.stats['threads_visited'].toString(),
+                  keyboardType: TextInputType.number,
+                  onSubmitted: (val) => _setValue('threads_visited', val),
                 ),
                 MenuTextField(
                   label: "Total threads clicked",
-                  value: stats['threads_clicked'].toString(),
+                  boxField: boxField,
+                  value: my.prefs.stats['threads_clicked'].toString(),
+                  keyboardType: TextInputType.number,
+                  onSubmitted: (val) => _setValue('threads_clicked', val),
                 ),
                 MenuTextField(
                   label: "Threads created",
-                  value: stats['threads_created'].toString(),
+                  boxField: boxField,
+                  value: my.prefs.stats['threads_created'].toString(),
+                  keyboardType: TextInputType.number,
+                  onSubmitted: (val) => _setValue('threads_created', val),
                 ),
                 MenuTextField(
                   label: "Posts created",
-                  // value: snapshot.data['posts']?.length?.toString(),
-                  value: stats['posts_created'].toString(),
+                  boxField: boxField,
+                  value: my.prefs.stats['posts_created'].toString(),
+                  keyboardType: TextInputType.number,
+                  onSubmitted: (val) => _setValue('posts_created', val),
+                ),
+                MenuTextField(
+                  label: "Replies received",
+                  value: my.prefs.stats['replies_received'].toString(),
+                ),
+                MenuTextField(
+                  label: "Media views",
+                  value: my.prefs.stats['media_views'].toString(),
+                ),
+                MenuTextField(
+                  label: "Favorites refreshed",
+                  value: my.prefs.stats['favs_refreshed'].toString(),
+                ),
+                MenuTextField(
+                  label: "Total hours",
+                  value: (my.prefs.stats['visits'] * 3 ~/ 60).toString(),
                 ),
               ],
             );
-          }
-          return Container();
-        },
-      ),
+          }),
     );
+  }
+
+  void _setValue(String field, String val) {
+    try {
+      final intVal = int.parse(val);
+      my.prefs.setStats(field, intVal);
+    } catch (e) {
+      my.prefs.setStats(field, my.prefs.stats[field]);
+    }
   }
 }

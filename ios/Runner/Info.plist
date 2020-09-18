@@ -14,6 +14,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ru</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>iChan</string>
 	<key>CFBundlePackageType</key>
@@ -22,8 +27,10 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -34,7 +41,7 @@
 		<true/>
 	</dict>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-  <string>Required for saving media to selected album</string>
+	<string>Required for saving media to selected album</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Required for image and video attachments in your posts</string>
 	<key>UIBackgroundModes</key>
@@ -68,22 +75,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>ShareMedia</string>
-			</array>
-		</dict>
-		<dict/>
-	</array>
-	<key>CFBundleLocalizations</key>
-<array>
-	<string>en</string>
-	<string>ru</string>
-</array>
 </dict>
 </plist>

@@ -56,7 +56,7 @@ class FavoritesListState extends State<FavoritesList> {
             controller: _refreshController,
             onRefresh: () {
               Haptic.lightImpact();
-              my.favoriteBloc.add(FavoriteRefreshAllPressed());
+              my.favoriteBloc.refreshManual();
             },
             child: CustomScrollView(slivers: data + favData));
       },
@@ -181,7 +181,7 @@ class FavoritesListState extends State<FavoritesList> {
                       ),
                     ),
                     onTap: () {
-                      my.favoriteBloc.add(FavoriteDeleted(fav: favs[index]));
+                      my.favoriteBloc.favoriteDeleted(favs[index]);
                       setState(() {});
                     },
                   );

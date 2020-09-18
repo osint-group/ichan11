@@ -127,7 +127,7 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
         ),
       );
     } else {
-      final headers = Helper.headersForPath(media.path);
+      final headers = System.headersForPath(media.path);
 
       final thumbImage = ExtendedImage.network(
         media.thumbnailUrl,

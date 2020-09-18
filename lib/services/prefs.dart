@@ -4,10 +4,12 @@ import 'package:iChan/models/platform.dart';
 import 'package:iChan/services/box_proxy.dart';
 
 import 'exports.dart';
-import 'helper.dart';
 
 class PrefsBox extends BoxProxy {
   PrefsBox({this.box});
+
+  final isSafe = const String.fromEnvironment('SAFE') == "1";
+  final updaterOn = const String.fromEnvironment('UPDATER') != "0";
 
   final Box box;
 
@@ -17,18 +19,20 @@ class PrefsBox extends BoxProxy {
     "threads_created": 0,
     "posts_created": 0,
     "visits": 0,
+    "favs_refreshed": 0,
+    "replies_received": 0,
+    "media_views": 0,
   };
 
-  bool get isTranslucent => !getBool('classic_mode');
-
   bool get isTester => getBool('tester');
-  bool get isClassic => getBool('classic_mode');
 
   ScrollPhysics get scrollPhysics => const BouncingScrollPhysics();
 
-  double get postFontSize => double.parse(box.get('post_font_size', defaultValue: "15") as String);
+  double get postFontSize => getDouble('font_size', defaultValue: 15.0);
 
-  bool get showCaptcha => getBool('passcode_enabled') == false;
+  bool get showCaptcha {
+    return getBool('passcode_enabled') == false;
+  }
 
   bool get passcodeOn => getBool('passcode_enabled');
   bool get passcodeOff => !passcodeOn;
@@ -38,17 +42,6 @@ class PrefsBox extends BoxProxy {
   FontWeight get fontWeight {
     final val = box.get('light_font', defaultValue: false) as bool;
     return val ? FontWeight.w300 : FontWeight.normal;
-  }
-
-  String get usercookie {
-    final existing = getString('cookie_usercode');
-    if (existing.isEmpty) {
-      final code = Helper.generateUsercode();
-      box.put('cookie_usercode', code);
-      return code;
-    } else {
-      return existing;
-    }
   }
 
   void incrStats(String field, {int to = 1}) {

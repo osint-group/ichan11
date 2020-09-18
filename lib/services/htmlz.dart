@@ -21,6 +21,8 @@ class Htmlz {
     return text.innerText;
   }
 
+  static String toHuman(String body) => cleanTags(unescape(replaceNewline(body)));
+
   static String unescape(String body) {
     return body
         .replaceAll('&gt;', '>')
@@ -31,11 +33,8 @@ class Htmlz {
         .replaceAll("&#47;", '/')
         .replaceAll("&#92;", '\\')
         .replaceAll("&#039;", "'")
+        .replaceAll("&#39;", "'")
         .replaceAll("&nbsp;", ' ')
         .replaceAll("&copy;", '©');
-  }
-
-  static String toHuman(String body) {
-    return cleanTags(unescape(replaceNewline(body)));
   }
 }

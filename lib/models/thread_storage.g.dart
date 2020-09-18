@@ -36,13 +36,14 @@ class ThreadStorageAdapter extends TypeAdapter<ThreadStorage> {
     )
       ..domain = fields[5] as String
       ..visitedAt = fields[11] as int
-      ..extras = (fields[16] as Map)?.cast<String, dynamic>();
+      ..extras = (fields[16] as Map)?.cast<String, dynamic>()
+      ..refreshedAt = fields[19] as int;
   }
 
   @override
   void write(BinaryWriter writer, ThreadStorage obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.threadId)
       ..writeByte(1)
@@ -80,7 +81,9 @@ class ThreadStorageAdapter extends TypeAdapter<ThreadStorage> {
       ..writeByte(17)
       ..write(obj.platform)
       ..writeByte(18)
-      ..write(obj.savedJson);
+      ..write(obj.savedJson)
+      ..writeByte(19)
+      ..write(obj.refreshedAt);
   }
 
   @override

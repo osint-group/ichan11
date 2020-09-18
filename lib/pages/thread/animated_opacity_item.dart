@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:iChan/services/exports.dart';
+import 'package:iChan/services/my.dart' as my;
 
 // First post item
 class AnimatedOpacityItem extends StatefulWidget {
@@ -84,7 +85,7 @@ class AnimatedOpacityItemState extends State<AnimatedOpacityItem> {
 
     return AnimatedOpacity(
       opacity: opacity,
-      duration: 0.3.seconds,
+      duration: my.prefs.getBool("fast_animation") ? 0.2.seconds : 0.3.seconds,
       child: widget.child,
       onEnd: () => widget.onEnd == null ? null : widget.onEnd(),
     );

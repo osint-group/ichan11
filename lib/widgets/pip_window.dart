@@ -23,7 +23,7 @@ class _PipWindowState extends State<PipWindow> {
       builder: (context, state) {
         if (state is PlayerYoutubeActive && state?.url != null) {
           // if (my.prefs.getBool('disable_autoturn')) {
-          Helper.setAutoturn('auto');
+          System.setAutoturn('auto');
           // }
 
           return ValueListenableBuilder(

@@ -7,6 +7,7 @@ import 'package:iChan/blocs/blocs.dart';
 import 'package:iChan/blocs/thread/data.dart';
 import 'package:iChan/blocs/thread/event.dart';
 import 'package:iChan/blocs/thread/state.dart';
+import 'package:iChan/blocs/thread/thread_parser.dart';
 
 import 'package:iChan/models/models.dart';
 import 'package:iChan/models/thread_storage.dart';
@@ -22,11 +23,11 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
   final Map<String, ThreadData> _threadDataList = {};
   ThreadData _current;
 
+  // for debug only
   ThreadData get current => _current;
 
   @override
   Stream<ThreadState> mapEventToState(ThreadEvent event) async* {
-    // print("=============== $event ===================");
     if (event is ThreadFetchStarted) {
       if (event.force) {
         _threadDataList.remove(event.thread.toKey);
@@ -36,16 +37,18 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
     } else if (event is ThreadPostsAppended) {
       final threadData = getThreadData(event.fav.id);
 
+      ThreadParser parser;
       if (threadData != null) {
         yield ThreadLoading(threadData: threadData);
-      }
-
-      _appendPosts(event.posts, fav: event.fav);
-
-      if (threadData != null) {
+        parser = ThreadParser(threadData: threadData);
+        await parser.appendPosts(event.posts);
         yield ThreadLoaded(threadData: threadData);
+      } else {
+        parser = ThreadParser(threadStorage: event.fav);
+        parser.appendPosts(event.posts);
       }
     } else if (event is ThreadRefreshStarted) {
+      // Todo: multiplatform support
       if (event.thread.platform == Platform.dvach) {
         yield* _threadRefreshStartedEvent(event);
       } else {
@@ -57,6 +60,8 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
       yield* _scrollThreadEvent(event);
     } else if (event is ThreadReportPressed) {
       yield* _threadReportPressedEvent(event);
+    } else if (event is ThreadDeletePressed) {
+      yield* _threadDeletePressedEvent(event);
     } else if (event is ThreadCacheDisabled) {
       _threadDataList.clear();
       _current = ThreadData(thread: Thread.empty());
@@ -135,11 +140,16 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
   Stream<ThreadState> _threadReportPressedEvent(ThreadReportPressed event) async* {
     print("CreateReport event");
 
+    Log.warn("1");
+
     final result = await repo.on(Platform.dvach).createReport(payload: event.payload);
+    Log.warn("2");
     if (result["ok"] == true) {
+      Log.warn("OK");
       yield ThreadMessage(message: "Report has been sent", threadData: _current);
       yield ThreadLoaded(threadData: _current);
     } else {
+      Log.warn("NOT OK");
       yield ThreadMessage(
         message: result["error"],
         threadData: _current,
@@ -148,16 +158,34 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
     }
   }
 
+  Stream<ThreadState> _threadDeletePressedEvent(ThreadDeletePressed event) async* {
+    print("Delete event");
+
+    final payload = {
+      'threadId': event.post.threadId,
+      'postId': event.post.outerId,
+      'boardName': event.post.boardName,
+    };
+
+    final result = await repo.on(event.post.platform).deletePost(payload);
+    if (result['ok']) {
+      yield ThreadMessage(message: "Post has been deleted", threadData: _current);
+      yield ThreadLoaded(threadData: _current);
+    } else {
+      yield ThreadMessage(message: result['error'], threadData: _current);
+      _current.posts.removeWhere((e) => e.outerId == event.post.outerId);
+      yield ThreadLoaded(threadData: _current);
+    }
+    return;
+  }
+
   Stream<ThreadState> _threadFetchStartedEvent(ThreadFetchStarted event) async* {
     _current = initThreadData(event.thread);
-
-    // _current.myPosts = await my.db.getPostsInThread(_current.thread);
 
     final isShowCached =
         _current.posts.isNotEmpty && my.prefs.getBool('thread_cache_disabled') == false;
 
     if (isShowCached) {
-      // print("CACHED: ${event.thread.title}");
       _current.status = ThreadStatus.cached;
 
       yield ThreadLoading(threadData: _current);
@@ -178,14 +206,9 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
         // print("====== LOADING UNREAD INDEX is ${_current.unreadPostIndex}");
         yield ThreadLoading(threadData: _current);
       } else {
-        final td = ThreadData(
-          status: ThreadStatus.empty,
-          thread: event.thread,
-        );
+        final td = ThreadData(thread: event.thread);
 
-        yield ThreadEmpty(
-          threadData: td,
-        );
+        yield ThreadEmpty(threadData: td);
       }
 
       yield* threadLoad(
@@ -203,25 +226,38 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
       final data =
           await repo.on(thread.platform).fetchThreadPosts(thread: thread, savedJson: savedJson);
 
-      _current.posts = data["posts"] as List<Post>;
-      _current.thread = data["thread"] as Thread;
-      // updateFavoriteBefore();
+      // print("_current.thread.uniquePosters = ${_current.thread.uniquePosters}");
+      if (_current.thread.uniquePosters == null) {
+        _current.thread = data["thread"] as Thread;
+      }
+      if (_current.status == ThreadStatus.partial) {
+        _current.posts = [];
+        _current.thread.mediaFiles = [];
+      }
+      // print("2 _current.thread.uniquePosters = ${_current.thread.uniquePosters}");
+
+      updateFavoriteBefore();
 
       if (scrollPostId.isNotEmpty) {
         _current.threadStorage.rememberPostId = scrollPostId;
       }
 
-      await SchedulerBinding.instance.scheduleTask<Map<String, List<String>>>(
-        () => _parseReplies(_current, _current.posts),
+      final parser = ThreadParser(threadData: _current);
+      // print("3 _current.thread.uniquePosters = ${_current.thread.uniquePosters}");
+
+      await SchedulerBinding.instance.scheduleTask(
+        () => parser.appendPosts(data["posts"] as List<Post>),
         Priority.animation,
       );
+
       _current.status = ThreadStatus.loaded;
       _current.refreshedAt = DateTime.now().millisecondsSinceEpoch;
 
-      // print("====== LOADED UNREAD INDEX is ${_current.unreadPostIndex}");
       yield ThreadLoading(threadData: _current);
 
       await listenableReady();
+
+      // print("3 _current.thread.uniquePosters = ${_current.thread.uniquePosters}");
 
       yield ThreadLoaded(threadData: _current);
     } on MyException catch (error) {
@@ -240,8 +276,6 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
   Stream<ThreadState> _threadRefreshStartedEvent(ThreadRefreshStarted event) async* {
     _current = initThreadData(event.thread);
 
-    // _current.myPosts = await my.db.getPostsInThread(_current.thread);
-
     yield ThreadLoading(threadData: _current);
     try {
       final int timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -254,14 +288,11 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
         await Future.delayed(event.delay);
       }
 
-      // await updateCurrentData(_current.posts);
       _current.status = ThreadStatus.loaded;
       _current.refreshedAt = DateTime.now().millisecondsSinceEpoch;
-
-      // assert(_current.replies != null);
+      _current.ts.extras['last_post_ts'] = _current.posts.last.timestamp * 1000;
 
       yield ThreadLoaded(threadData: _current);
-      // updateFavoriteAfter();
     } on MyException catch (error) {
       _current.status = ThreadStatus.loaded;
       print("getNewPosts exception: $error");
@@ -335,21 +366,17 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
     final unreadPostIndex = posts.length - ts.unreadCount - 1;
     ts.unreadPostId = posts.elementAtOrNull(unreadPostIndex)?.outerId ?? posts.last.outerId;
     scrollData.reset();
-    my.favoriteBloc.add(FavoriteUpdated());
+    my.favoriteBloc.favoriteUpdated();
     ts.putOrSave();
   }
 
   Stream<ThreadState> _scrollThreadEvent(ThreadScrollStarted event) async* {
     _current = initThreadData(event.thread);
-    // print("_scrollThreadEvent");
     if (_current.posts == null) {
-      // print("Returning from scroll");
       return;
     }
 
-    // final double alignment = _current.posts.length >= 5 ? 0.65 : 0.0;
     final scrollTo = event.to ?? "post";
-
     final ts = _current.threadStorage;
 
     switch (scrollTo) {
@@ -424,8 +451,14 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
       ts.threadId = _current.thread.outerId;
       ts.threadTitle = _current.thread.titleOrBody;
       ts.platform = _current.thread.platform;
-      ts.unreadPostId = _current.posts.first.outerId;
-      ts.unreadCount = _current.posts.length - 1;
+      if (_current.posts.isNotEmpty) {
+        ts.unreadPostId = _current.posts.first.outerId;
+        ts.unreadCount = _current.posts.length - 1;
+        ts.extras['last_post_ts'] = _current.posts.last.timestamp * 1000;
+      } else {
+        ts.unreadPostId = _current.thread.outerId;
+        ts.extras['last_post_ts'] = _current.thread.timestamp * 1000;
+      }
       ts.rememberPostId = ts.unreadPostId;
     }
 
@@ -447,69 +480,7 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
       my.favs.box.put(ts.id, ts);
     }
 
-    my.favoriteBloc.add(FavoriteUpdated());
-  }
-
-  // TODO: DRY
-  int _appendPosts(List<Post> newPosts, {ThreadStorage fav, ThreadData data}) {
-    data ??= getThreadData(fav.key);
-    fav ??= data.threadStorage;
-    int lastCounter;
-
-    if (data != null) {
-      lastCounter = data.posts.isEmpty ? 1 : data.posts.last.counter;
-    }
-
-    final List<Post> fileredPosts = [];
-    for (final post in newPosts) {
-      if (lastCounter != null) {
-        if (int.parse(data.posts.last.outerId) < int.parse(post.outerId)) {
-          lastCounter += 1;
-          post.counter = lastCounter;
-          fileredPosts.add(post);
-        }
-      }
-
-      final myPost =
-          my.posts.get("${post.platform.toString()}-${post.boardName}-${post.outerId}") as Post;
-      if (myPost != null && myPost.isMine) {
-        post.isMine = true;
-      }
-
-      // mark green
-      for (final postId in post.repliesParent) {
-        final platform = fav?.platform ?? data.thread.platform;
-        final boardName = fav?.boardName ?? data.thread.boardName;
-        final myPost = my.posts.get("${platform.toString()}-$boardName-$postId") as Post;
-        if (myPost != null && myPost.isMine == true) {
-          fav.hasReplies = true;
-          fav.putOrSave();
-          if (!post.isPersisted) {
-            post.isToMe = true;
-            post.isUnread = true;
-            my.posts.put(post.toKey, post);
-          }
-        }
-
-        final parentPost = data?.posts?.firstWhere((e) => e.outerId == postId, orElse: () => null);
-        if (parentPost != null && !parentPost.replies.contains(post.outerId)) {
-          parentPost.replies.add(post.outerId);
-        }
-      }
-    }
-
-    if (data == null || fileredPosts.isEmpty) {
-      return 0;
-    }
-
-    data.posts = data.posts + fileredPosts;
-    if (data.thread.mediaFiles != null) {
-      data.thread.mediaFiles = appendMediaList(data.thread.mediaFiles, fileredPosts);
-    }
-
-    // _parseReplies(data, data.posts);
-
-    return fileredPosts.length;
+    my.favoriteBloc.favoriteUpdated();
   }
 
   Future<void> getNewPosts({@required String threadId, @required String boardName}) async {
@@ -522,7 +493,11 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
         .on(Platform.dvach)
         .fetchNewPosts(threadId: threadId, boardName: boardName, startPostId: startPostId);
 
-    _appendPosts(newPosts, data: _current);
+    final parser = ThreadParser(threadData: _current);
+    await SchedulerBinding.instance.scheduleTask(
+      () => parser.appendPosts(newPosts),
+      Priority.animation,
+    );
 
     final lastId = _current.threadStorage.unreadPostId.toInt();
     for (final post in newPosts) {
@@ -532,78 +507,12 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
     }
   }
 
-  Map<String, List<String>> _parseReplies(ThreadData threadData, List<Post> posts) {
-    final Map<String, List<String>> result = {};
-    if (posts == null) {
-      return result;
-    }
-
-    final platform = threadData.thread.platform;
-    final boardName = threadData.thread.boardName;
-
-    final matchPost = platform == Platform.dvach ? ">>" : '&gt;&gt;';
-
-    for (final post in posts) {
-      if (my.prefs.getBool('hide_my_posts') == false) {
-        final myPost = my.posts.get("${platform.toString()}-$boardName-${post.outerId}") as Post;
-
-        // post.isMine = threadData.myPosts.any((e) => e.outerId == post.outerId);
-        post.isMine = myPost?.isMine == true;
-      }
-
-      for (final postId in post.repliesParent) {
-        if (result.containsKey(postId) == false) {
-          result[postId] = [];
-        }
-        if (my.prefs.getBool('hide_my_posts') == false) {
-          final myPost = my.posts.get("${platform.toString()}-$boardName-$postId") as Post;
-
-          // final toMe = threadData.myPosts.any((e) => e.outerId == postId);
-          final toMe = myPost?.isMine == true;
-          if (!post.isMine && toMe) {
-            final youMark = my.prefs.getString('you_mark', defaultValue: Consts.youMark);
-            post.isToMe = true;
-
-            post.body =
-                post.body.replaceAll('$matchPost$postId<', '<b>$matchPost$postId </b>$youMark<');
-          }
-        }
-        result[postId].add(post.outerId);
-      }
-    }
-
-    for (final post in posts) {
-      if (result.containsKey(post.outerId)) {
-        post.replies = result[post.outerId];
-      }
-      if (post.isMine || post.isToMe) {
-        my.posts.put(post.toKey, post);
-      }
-    }
-
-    return result;
-  }
-
   int postIdToIndex({String postId, int orElse}) {
     final int result = _current?.posts?.indexWhere((e) => e.outerId == postId);
     if ((result == null || result == -1) && orElse != null) {
       return orElse;
     }
     return result ?? -1;
-  }
-
-  List<Media> appendMediaList(List<Media> mediaList, List<Post> posts) {
-    if (posts == null || posts.isEmpty) {
-      return [];
-    }
-
-    for (final post in posts) {
-      if (post.mediaFiles.isNotEmpty) {
-        post.mediaFiles.forEach(mediaList.add);
-      }
-    }
-
-    return mediaList;
   }
 
   ThreadData initThreadData(Thread thread) {
@@ -615,12 +524,5 @@ class ThreadBloc extends Bloc<ThreadEvent, ThreadState> {
     }
   }
 
-  ThreadData getThreadData(String key) {
-    return _threadDataList[key];
-    // if (_threadDataList.containsKey(key)) {
-    //   return _threadDataList[key];
-    // } else {
-    //   return null;
-    // }
-  }
+  ThreadData getThreadData(String key) => _threadDataList[key];
 }

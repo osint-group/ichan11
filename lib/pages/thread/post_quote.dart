@@ -16,15 +16,6 @@ class PostQuote extends HookWidget {
   final Thread thread;
   final Post post;
 
-  Future<bool> processResult(BuildContext context, Future<dynamic> result) async {
-    result.then((e) {
-      if (e == true) {
-        Navigator.of(context).pop();
-      }
-    });
-    return true;
-  }
-
   void selectText(BuildContext context, TextEditingController controller) {
     final sel = controller.selection;
     final text = sel.isValid && sel.baseOffset != sel.extentOffset
@@ -34,9 +25,14 @@ class PostQuote extends HookWidget {
     final fav = ThreadStorage.findById(thread.toJsonId);
     my.postBloc.addQuote(postId: post.outerId, text: text, fav: fav);
 
-    final Future<dynamic> result = Routz.of(context)
-        .toPage(NewPostPage(thread: thread), title: thread.trimTitle(Consts.navLeadingTrimSize));
-    processResult(context, result);
+    final page = NewPostPage(thread: thread);
+    final title = thread.trimTitle(Consts.navLeadingTrimSize);
+
+    Routz.of(context).toPage(page, title: title).then((e) {
+      if (e == true) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   @override
@@ -76,11 +72,12 @@ class PostQuote extends HookWidget {
             ),
             Center(
               child: CupertinoButton(
-                  color: my.theme.primaryColor,
-                  onPressed: () {
-                    selectText(context, controller);
-                  },
-                  child: const Text("Quote")),
+                color: my.theme.primaryColor,
+                onPressed: () {
+                  selectText(context, controller);
+                },
+                child: const Text("Quote"),
+              ),
             )
           ],
         ),

@@ -34,9 +34,7 @@ class HeaderNavbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final myBackgroundColor = backgroundColor ?? my.theme.backgroundColor;
 
-    final navBackgroundColor = my.prefs.isTranslucent
-        ? my.theme.navbarBackgroundColor.withOpacity(Consts.navbarOpacity)
-        : my.theme.navbarBackgroundColor;
+    final navBackgroundColor = my.theme.navbarBackgroundColor.withOpacity(Consts.navbarOpacity);
 
     return MyCupertinoPageScaffold(
       backgroundColor: myBackgroundColor,
@@ -54,7 +52,7 @@ class HeaderNavbar extends StatelessWidget {
         trailing: trailing,
       ),
       child: SafeArea(
-        top: my.prefs.isTranslucent && transparent == false,
+        top: transparent == false,
         bottom: false,
         left: false,
         right: false,

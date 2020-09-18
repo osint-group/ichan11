@@ -27,7 +27,7 @@ class _FavSliverItemState extends State<FavSliverItem> {
         text: "Delete",
         color: my.theme.alertColor,
         onPressed: () {
-          my.favoriteBloc.add(FavoriteDeleted(fav: fav));
+          my.favoriteBloc.favoriteDeleted(fav);
         },
       ),
       if (fav.status != Status.deleted) ...[
@@ -36,7 +36,7 @@ class _FavSliverItemState extends State<FavSliverItem> {
           onPressed: () {
             fav.refresh = !fav.refresh;
             fav.save();
-            my.favoriteBloc.add(FavoriteUpdated());
+            my.favoriteBloc.favoriteUpdated();
           },
         )
       ],
@@ -49,7 +49,7 @@ class _FavSliverItemState extends State<FavSliverItem> {
               fav.visits = maxVisitsFav.visits + 1;
               fav.save();
             }
-            my.favoriteBloc.add(FavoriteUpdated());
+            my.favoriteBloc.favoriteUpdated();
           },
         ),
       ]
@@ -137,10 +137,10 @@ class _FavSliverItemState extends State<FavSliverItem> {
                   behavior: HitTestBehavior.translucent,
                   onTap: () async {
                     if (fav.status == Status.deleted) {
-                      my.favoriteBloc.add(FavoriteDeleted(fav: fav));
+                      my.favoriteBloc.favoriteDeleted(fav);
                       // fav.delete();
 
-                      // my.favoriteBloc.add(FavoriteUpdated());
+                      // my.favoriteBloc.favoriteUpdated();
                     } else {
                       await Routz.of(context).toThread(
                         threadLink: ThreadLink.fromStorage(fav),

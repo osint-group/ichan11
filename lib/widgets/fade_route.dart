@@ -1,10 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class FadeRoute extends PageRouteBuilder {
-  FadeRoute({this.page, this.settings})
-      : super(
+class FadeRoute<T> extends PageRouteBuilder<T> {
+  FadeRoute({
+    this.page,
+    this.settings,
+    this.title,
+    this.duration,
+    this.opaque,
+  }) : super(
           settings: settings,
+          transitionDuration: duration ?? const Duration(milliseconds: 300),
           pageBuilder: (
             BuildContext context,
             Animation<double> animation,
@@ -26,6 +32,9 @@ class FadeRoute extends PageRouteBuilder {
   final Widget page;
   final RouteSettings settings;
 
-  @override
-  final bool opaque = false;
+  final String title;
+
+  final Duration duration;
+
+  final bool opaque;
 }

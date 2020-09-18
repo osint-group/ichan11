@@ -19,7 +19,7 @@ Future<Map<String, dynamic>> makabaProcessPosts(Map<String, String> args) async 
     data['Board'] as String,
     data['title'] as String,
     data['platform'],
-    data["threads"][0]["posts"][0]["comment"],
+    data["threads"][0]["posts"][0]["comment"] ?? '',
     data["threads"][0]["posts"][0]["timestamp"] as int,
     data['posts_count'] as int,
     data['files_count'] as int,
@@ -33,9 +33,6 @@ Future<Map<String, dynamic>> makabaProcessPosts(Map<String, String> args) async 
     json['board'] = data['Board'];
     json['threadId'] = thread.outerId;
     final post = makabaBuildPost(json);
-    if (post.mediaFiles.isNotEmpty) {
-      thread.mediaFiles += post.mediaFiles;
-    }
     post.threadUniques = uniques;
     return post;
   }));

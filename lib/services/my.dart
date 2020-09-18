@@ -4,7 +4,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:iChan/blocs/blocs.dart';
-import 'package:iChan/db/app_db.dart';
 import 'package:iChan/models/models.dart';
 import 'package:iChan/models/thread_storage.dart';
 import 'package:iChan/repositories/4chan/fourchan_api.dart';
@@ -17,7 +16,6 @@ import 'package:iChan/services/exports.dart';
 import 'package:iChan/services/media_cache_manager.dart';
 import 'package:iChan/services/posts_box.dart';
 import 'package:iChan/ui/context_tools.dart';
-import 'package:iChan/services/helper.dart';
 import 'package:iChan/services/prefs.dart';
 import 'package:iChan/services/secstore.dart';
 import 'package:iChan/ui/theme_manager.dart';
@@ -61,11 +59,6 @@ Future setupSingletons() async {
   // apis
   getIt.registerSingleton(repo);
 
-  // db
-  getIt.registerSingleton(AppDb());
-
-  // other
-  getIt.registerSingleton(Helper());
   getIt.registerSingleton(ContextTools());
   getIt.registerSingleton<MakabaApi>(makabaApi);
   getIt.registerSingleton<FourchanApi>(fourchanApi);
@@ -93,12 +86,9 @@ Future setupSingletons() async {
   getIt.registerSingleton<IconTheme>(DefaultIconTheme());
 }
 
-final db = getIt<AppDb>();
-
 final analytics = getIt<FirebaseAnalytics>();
 final repo = getIt<Repo>();
 
-final helper = getIt<Helper>();
 final contextTools = getIt<ContextTools>();
 
 final favoriteBloc = getIt<FavoriteBloc>();

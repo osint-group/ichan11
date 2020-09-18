@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:hive/hive.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/widgets/shimmer_widget.dart';
 import 'package:iChan/services/my.dart' as my;
 
-class WelcomePage extends StatelessWidget {
+class WarningPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     my.contextTools.init(context);
@@ -24,8 +23,7 @@ class WelcomePage extends StatelessWidget {
     """;
 
     return CupertinoPageScaffold(
-        child:
-            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       Container(
         padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -33,26 +31,22 @@ class WelcomePage extends StatelessWidget {
           SingleChildScrollView(
               child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(rules,
-                style: TextStyle(
-                    color: my.theme.foregroundBrightColor, fontSize: 14)),
+            child:
+                Text(rules, style: TextStyle(color: my.theme.foregroundBrightColor, fontSize: 14)),
           ))
         ]),
       ),
       Container(
           decoration: BoxDecoration(
-              color: my.theme.primaryColor,
-              borderRadius: BorderRadius.circular(10.0)),
+              color: my.theme.primaryColor, borderRadius: BorderRadius.circular(10.0)),
           child: CupertinoButton(
               key: const ValueKey('accept'),
               onPressed: () {
                 HapticFeedback.heavyImpact();
-                Hive.box('prefs').put('agreement', true);
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
+                my.prefs.put('agreement_accepted', true);
+                Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
               },
-              child: Text("ACCEPT",
-                  style: TextStyle(color: my.theme.postBackgroundColor)))),
+              child: Text("ACCEPT", style: TextStyle(color: my.theme.postBackgroundColor)))),
     ]));
   }
 }

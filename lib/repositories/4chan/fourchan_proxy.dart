@@ -22,10 +22,11 @@ class FourchanProxy implements ApiProxy {
   final defaultAnonName = 'Anonymous';
   static const platform = Platform.fourchan;
 
-  Future<Map<String, dynamic>> deletePost({Map<String, dynamic> payload}) async {
+  Future<Map<String, dynamic>> deletePost(Map<String, dynamic> payload) async {
     print('deletePost: $payload');
 
     final Map<String, dynamic> formData = {
+      'board': payload['boardName'],
       'mode': 'usrdel',
       'res': payload['threadId'],
       'pwd': '',
@@ -34,7 +35,6 @@ class FourchanProxy implements ApiProxy {
 
     final cookies = await getCookies();
     final result = await api.deletePost(formData, cookies: cookies);
-    print('result = $result');
     return result;
   }
 
@@ -94,17 +94,21 @@ class FourchanProxy implements ApiProxy {
   Future<Map<String, dynamic>> fetchBoards() async {
     final json = await api.fetchBoards();
     final List<Board> boards = [];
-    final List<String> categories = ["All"];
+    final List<String> categories = ["Boards"];
 
-    final jsonBoards = json['boards'];
+    if (my.prefs.getBool('fourchan_nsfw')) {
+      categories.add("NSFW Boards");
+    }
 
-    for (final board in jsonBoards) {
+    for (final board in json['boards']) {
+      final nsfw = board['ws_board'] == 0;
       boards.add(Board.fromMap({
         'id': board['board'],
         'name': board['title'],
-        'category': 'All',
+        'category': nsfw ? 'NSFW Boards' : 'Boards',
         'bump_limit': board['bump_limit'],
         'platform': Platform.fourchan,
+        'nsfw': nsfw,
       }));
     }
 
@@ -151,7 +155,7 @@ class FourchanProxy implements ApiProxy {
       "board": thread.boardName,
     };
 
-    if (my.prefs.getBool("async_disabled")) {
+    if (my.prefs.getBool('async_disabled')) {
       if (!isDebug) {
         print('ASYNC OFF');
       }

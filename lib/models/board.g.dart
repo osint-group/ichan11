@@ -23,13 +23,14 @@ class BoardAdapter extends TypeAdapter<Board> {
       category: fields[2] as String,
       bumpLimit: fields[3] as int,
       isFavorite: fields[5] as bool,
+      isNsfw: fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Board obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class BoardAdapter extends TypeAdapter<Board> {
       ..writeByte(4)
       ..write(obj.platform)
       ..writeByte(5)
-      ..write(obj.isFavorite);
+      ..write(obj.isFavorite)
+      ..writeByte(6)
+      ..write(obj.isNsfw);
   }
 
   @override

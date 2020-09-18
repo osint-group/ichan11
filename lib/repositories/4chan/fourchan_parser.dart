@@ -70,13 +70,11 @@ Future<Map<String, dynamic>> fourchanProcessPosts(Map<String, String> args,
     postJson['threadId'] = thread.outerId;
     postJson['number'] = counter;
     final post = fourchanBuildPost(postJson);
-    if (post.mediaFiles.isNotEmpty) {
-      thread.mediaFiles += post.mediaFiles;
-    }
-
     counter += 1;
     return post;
   }));
+
+  // thread.mediaFiles = posts.first.mediaFiles;
 
   return {"posts": posts, "thread": thread};
 }

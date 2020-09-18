@@ -75,8 +75,8 @@ class _ThreadItemState extends State<ThreadItem> {
     Future.delayed(3.minutes).then((value) {
       final currentScreen = my.prefs.get("last_screen").cast<String, dynamic>();
       if (currentScreen['page'] != 'board') {
-        widget.searchController.clear();
         my.boardBloc.add(const BoardSearchTyped(query: ""));
+        widget.searchController.clear();
       }
     });
   }

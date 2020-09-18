@@ -37,7 +37,7 @@ class PostBody extends StatelessWidget {
         await launch(url, forceSafariVC: false);
       }
     } else {
-      Helper.launchUrl(url);
+      System.launchUrl(url);
     }
   }
 
@@ -55,7 +55,7 @@ class PostBody extends StatelessWidget {
         child: Html(
           data: body,
           onLinkTap: (url, data) {
-            print('url = $url');
+            // print('url = $url');
             if (replyCallback == null) {
               return;
             }
@@ -155,7 +155,7 @@ class PostBody extends StatelessWidget {
             }
 
             if (url.startsWith('http')) {
-              Helper.launchUrl(url);
+              System.launchUrl(url);
             }
           },
           style: {
@@ -417,7 +417,7 @@ class PostBody extends StatelessWidget {
         }
         fav.isFavorite = false;
         fav.save();
-        my.favoriteBloc.add(FavoriteUpdated());
+        my.favoriteBloc.favoriteUpdated();
       }
     }
 

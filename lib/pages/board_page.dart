@@ -23,7 +23,7 @@ class BoardPage extends StatelessWidget {
 
   Widget build(BuildContext context) {
     if (my.prefs.getBool('disable_autoturn')) {
-      Helper.setAutoturn('portrait');
+      System.setAutoturn('portrait');
     }
 
     final data = {

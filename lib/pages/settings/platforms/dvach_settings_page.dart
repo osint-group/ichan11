@@ -55,13 +55,14 @@ class DvachSettingsPage extends StatelessWidget {
                   platforms.remove(Platform.dvach);
                   my.prefs.put('platforms', platforms);
                 }
+                my.prefs.put("dvach_enabled", val);
                 my.categoryBloc.setPlatform();
               },
             ),
             MenuTextField(
               label: 'Domain',
               boxField: 'domain',
-              onChanged: (val) {
+              onSubmitted: (val) {
                 if (val.isEmpty) {
                   my.prefs.put('domain', Consts.domain2ch);
                   my.makabaApi.domain = setDomain(Consts.domain2ch);
@@ -75,6 +76,22 @@ class DvachSettingsPage extends StatelessWidget {
             ),
             menuDivider,
             MenuSwitch(
+              label: 'NSFW boards',
+              field: 'dvach_nsfw',
+              defaultValue: false,
+              onChanged: (val) {
+                _confirmAge(context, 'dvach_nsfw', val);
+              },
+            ),
+            MenuSwitch(
+              label: 'Users boards',
+              field: 'dvach_userboards',
+              defaultValue: false,
+              onChanged: (val) {
+                _confirmAge(context, 'dvach_userboards', val);
+              },
+            ),
+            MenuSwitch(
               label: 'Passcode',
               field: 'passcode_enabled',
               defaultValue: false,
@@ -84,11 +101,10 @@ class DvachSettingsPage extends StatelessWidget {
                 }
                 my.prefs.put('passcode_enabled', v);
                 my.contextTools.init(context);
-                return false;
               },
             ),
             ValueListenableBuilder(
-              valueListenable: my.prefs.box.listenable(keys: ['passcode_enabled']),
+              valueListenable: my.prefs.box.listenable(keys: ['passcode_enabled', 'passcode']),
               builder: (BuildContext context, dynamic value, Widget child) {
                 if (my.prefs.getBool('passcode_enabled')) {
                   return const MenuTextField(
@@ -99,9 +115,55 @@ class DvachSettingsPage extends StatelessWidget {
                 return Container();
               },
             ),
+            menuDivider,
+            const MenuSwitch(
+              label: 'Proxy enabled',
+              field: 'dvach_proxy_enabled',
+              defaultValue: false,
+            ),
+            ValueListenableBuilder(
+              valueListenable: my.prefs.box.listenable(keys: ['dvach_proxy_enabled']),
+              builder: (BuildContext context, dynamic value, Widget child) {
+                if (my.prefs.getBool('dvach_proxy_enabled')) {
+                  return Column(
+                    children: const [
+                      MenuTextField(
+                        label: 'Address:port',
+                        boxField: 'dvach_proxy',
+                      ),
+                      MenuTextField(
+                        label: 'Boards',
+                        boxField: 'dvach_proxy_boards',
+                      ),
+                    ],
+                  );
+                }
+                return Container();
+              },
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future _confirmAge(BuildContext context, String field, bool val) async {
+    if (val == true) {
+      final actions = [
+        ActionSheet(text: "yes".tr(), value: "yes"),
+        ActionSheet(text: "no".tr(), value: "no")
+      ];
+
+      final result = await Interactive(context).alert(actions, content: "modals.age_confirm".tr());
+      if (result == "yes") {
+        my.prefs.put(field, true);
+      }
+    } else {
+      my.prefs.put(field, false);
+    }
+
+    if (my.categoryBloc.selectedPlatform == Platform.dvach) {
+      my.categoryBloc.fetchBoards(Platform.dvach);
+    }
   }
 }

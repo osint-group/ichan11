@@ -101,6 +101,7 @@ class ThreadsListState extends State<ThreadsList> {
       builder: (context, state) {
         if (state is BoardError) {
           return TapToReload(
+              enabled: state.reloadable,
               message: state.message,
               onTap: () => my.boardBloc.add(BoardLoadStarted(board: widget.board)));
         }

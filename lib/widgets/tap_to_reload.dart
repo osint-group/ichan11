@@ -4,12 +4,17 @@ import 'package:iChan/services/my.dart' as my;
 import 'package:iChan/widgets/shimmer_widget.dart';
 
 class TapToReload extends StatelessWidget {
-  TapToReload({Key key, this.message, this.onTap}) : super(key: key);
+  TapToReload({
+    Key key,
+    this.message,
+    this.onTap,
+    this.enabled = true,
+  }) : super(key: key);
 
   final Function onTap;
   final String message;
+  final bool enabled;
   final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
-  // double value = 0.0;
   static const defaultMessage = 'Error.';
 
   @override
@@ -17,7 +22,7 @@ class TapToReload extends StatelessWidget {
     return Center(
       child: GestureDetector(
           onTap: () async {
-            if (onTap != null) {
+            if (onTap != null && enabled) {
               isLoading.value = true;
               await Future.delayed(2.seconds);
               onTap();
@@ -32,7 +37,7 @@ class TapToReload extends StatelessWidget {
                 } else {
                   return Center(
                       child: Text(
-                    '${message ?? defaultMessage}\nTap to reload.',
+                    '${message ?? defaultMessage}${enabled ? '\nTap to reload.' : ''}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: my.theme.primaryColor,

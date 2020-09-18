@@ -7,6 +7,7 @@ import 'package:iChan/pages/thread_page.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/services/my.dart' as my;
 import 'package:iChan/widgets/fade_route.dart';
+import 'package:iChan/widgets/my/my_cupertino_page_route.dart';
 
 class Routz {
   Routz(this.context);
@@ -27,7 +28,7 @@ class Routz {
   }) async {
     if (replace) {
       return await Navigator.of(context).pushReplacement(
-        CupertinoPageRoute(
+        MyCupertinoPageRoute(
           builder: (context) => page,
           title: title,
           fullscreenDialog: fullscreen,
@@ -35,7 +36,7 @@ class Routz {
       );
     }
     return await Navigator.of(context).push(
-      CupertinoPageRoute(
+      MyCupertinoPageRoute(
         builder: (context) => page,
         title: title,
         fullscreenDialog: fullscreen,
@@ -43,9 +44,11 @@ class Routz {
     );
   }
 
-  Future fadeToPage(Widget page, {bool replace = false, RouteSettings settings}) async {
+  Future fadeToPage(Widget page,
+      {String title, bool replace = false, bool opaque = false, RouteSettings settings}) async {
     settings ??= const RouteSettings();
-    final pageRoute = FadeRoute(page: page, settings: settings);
+    final duration = my.prefs.getBool('slow_animation') ? 250.milliseconds : 175.milliseconds;
+    final pageRoute = FadeRoute(page: page, settings: settings, duration: duration, opaque: opaque);
     if (replace) {
       return await Navigator.of(context).pushReplacement(pageRoute);
     } else {
@@ -88,7 +91,7 @@ class Routz {
       previousPageTitle: previousPageTitle,
     );
 
-    final route = CupertinoPageRoute<bool>(
+    final route = MyCupertinoPageRoute<bool>(
       builder: (context) => threadPage,
       title: thread?.trimTitle(Consts.navLeadingTrimSize),
       settings: const RouteSettings(name: ThreadPage.routeName),
@@ -107,7 +110,7 @@ class Routz {
       {bool replace = false, String query = '', String previousPageTitle}) async {
     assert(board != null);
 
-    final Route<bool> route = CupertinoPageRoute(
+    final Route<bool> route = MyCupertinoPageRoute(
       builder: (context) => BoardPage(
         board: board,
         query: query,

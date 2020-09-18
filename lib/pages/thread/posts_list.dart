@@ -127,8 +127,7 @@ class PostsList extends StatelessWidget {
             }
 
             preloadedPosts = buildPreloadedPosts(actualData.posts);
-
-            // log("Thread storage is ${actualData.threadStorage.threadId}");
+            _showHelp(context);
           }
 
           // print(
@@ -145,8 +144,7 @@ class PostsList extends StatelessWidget {
           return CupertinoScrollbar(
             // child: ScrollablePositionedList.separated(
             child: ScrollablePositionedList.separated(
-              padding: EdgeInsets.only(
-                  bottom: my.contextTools.threadBarHeight + 5.0, top: Consts.sidePadding / 2),
+              padding: EdgeInsets.only(bottom: my.contextTools.threadBarHeight),
               physics: my.prefs.scrollPhysics,
               initialScrollIndex: scrollData.rememberIndex,
               initialAlignment: calcScrollAlignment(
@@ -177,6 +175,7 @@ class PostsList extends StatelessWidget {
                             child: Divider(
                               color: my.theme.dividerColor,
                               height: 1,
+                              thickness: 1,
                             ),
                           ),
                           const AnimatedOpacityItem(
@@ -195,6 +194,7 @@ class PostsList extends StatelessWidget {
                   child: Divider(
                     color: my.theme.dividerColor,
                     height: 1,
+                    thickness: 1,
                   ),
                 );
               },
@@ -204,22 +204,8 @@ class PostsList extends StatelessWidget {
 
                 PostItem postItem;
 
-                // if (my.prefs.getBool('prerender')) {
                 postItem = preloadedPosts.elementAtOrNull(index);
-                // } else {
-                //   final _post = actualData.posts.elementAtOrNull(index);
-                //   if (_post != null) {
-                //     postItem = PostItem(
-                //       origin: Origin.thread,
-                //       post: actualData.posts[index],
-                //       threadData: actualData,
-                //       isFirst: index == 0,
-                //     );
-                //   }
-                // }
 
-                // if there is a post, we need to show it
-                // if (_post?.isNotEmpty == true) {
                 if (postItem != null) {
                   // if we open it from board with one post loaded
                   if (index == 0 && actualData.posts.length == 1) {
@@ -274,7 +260,8 @@ class PostsList extends StatelessWidget {
     } else if (posts.length <= 4) {
       result = 0.0;
     } else if (diff >= 10) {
-      result = my.prefs.isClassic ? 0.0 : 0.11;
+      // result = my.prefs.isClassic ? 0.0 : 0.11;
+      result = 0.11;
       if (actualData.searchData.isNotEmpty) {
         result += 0.1;
       }
@@ -297,7 +284,7 @@ class PostsList extends StatelessWidget {
       } else if (symbolsCount >= 300) {
         result = 0.58;
       } else if (symbolsCount >= 200) {
-        result = 0.66;
+        result = 0.63;
       } else if (symbolsCount >= 150) {
         result = 0.70;
       } else if (symbolsCount >= 100) {
@@ -310,7 +297,8 @@ class PostsList extends StatelessWidget {
         result = 0.81;
       }
 
-      if (!my.prefs.isClassic && result == 0.0) {
+      // if (!my.prefs.isClassic && result == 0.0) {
+      if (result == 0.0) {
         result += 0.11;
       }
 
@@ -338,5 +326,16 @@ class PostsList extends StatelessWidget {
       index += 1;
     }
     return result;
+  }
+
+  void _showHelp(BuildContext context) {
+    if (my.prefs.getBool('help.thread')) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Interactive(context).message(title: 'help.tip'.tr(), content: 'help.thread'.tr());
+      my.prefs.put('help.thread', true);
+    });
   }
 }

@@ -24,6 +24,8 @@ abstract class ApiProxy {
   Future<Map<String, dynamic>> createThread(
       {Map<String, dynamic> payload, CancelToken cancelToken});
 
+  Future<Map<String, dynamic>> deletePost(Map<String, dynamic> payload);
+
   dynamic get api => null;
   String get defaultAnonName => null;
 }

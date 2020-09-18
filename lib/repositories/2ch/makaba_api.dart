@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/adapter.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:iChan/blocs/post_bloc.dart';
@@ -20,8 +21,12 @@ class MakabaApi {
 
   static const nsfwCookie = 'usercode_auth=6e88330e8fb3548e79ceeb1f6ab28543';
 
-  Dio dio({List<String> cookies, int timeout}) {
-    timeout ??= my.prefs.getBool('slow_connection') ? 15000 : 7000;
+  Dio dio({List<String> cookies, int timeout, String proxy}) {
+    if (proxy == null) {
+      timeout ??= my.prefs.getBool('slow_connection') ? 15000 : 7000;
+    } else {
+      timeout = 30000;
+    }
 
     final options = BaseOptions(
       baseUrl: domain,
@@ -47,6 +52,12 @@ class MakabaApi {
       }
     } else {
       dio.options.headers['cookie'] = cookies.join("; ");
+    }
+
+    if (proxy != null) {
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+        client.findProxy = (uri) => "PROXY $proxy";
+      };
     }
 
     // dio.interceptors.add(InterceptorsWrapper(
@@ -104,7 +115,12 @@ class MakabaApi {
     final String uri = archiveDate.isNotEmpty
         ? '$domain/$boardName/arch/$archiveDate/res/$threadId.json'
         : '$domain/$boardName/res/$threadId.json';
-    return await _safeRequest(uri);
+
+    try {
+      return await _safeRequest(uri);
+    } on NotFoundException catch (_) {
+      return await _fetchArchiveThread(uri);
+    }
   }
 
   Future<String> fetchNewPosts({String threadId, String boardName, String startPostId}) async {
@@ -138,9 +154,10 @@ class MakabaApi {
         cancelToken = null;
       }
 
-      final plainResponse = await dio(cookies: cookies, timeout: 15000).post(
+      final _dio = dio(cookies: cookies, timeout: 15000, proxy: _getProxy(formData['board']));
+
+      final plainResponse = await _dio.post(
         uri,
-        // options: Options(contentType: Headers.formUrlEncodedContentType),
         cancelToken: cancelToken,
         data: FormData.fromMap(formData),
         onSendProgress: (int sent, int total) {
@@ -176,11 +193,8 @@ class MakabaApi {
     const String uri = '/makaba/makaba.fcgi?json=1';
 
     try {
-      final plainResponse = await dio(cookies: cookies, timeout: 15000).post(
-        uri,
-        // options: Options(contentType: Headers.formUrlEncodedContentType),
-        data: FormData.fromMap(formData),
-      );
+      final plainResponse =
+          await dio(cookies: cookies, timeout: 15000).post(uri, data: FormData.fromMap(formData));
 
       return json.decode(plainResponse.data as String);
     } on DioError catch (e) {
@@ -204,7 +218,9 @@ class MakabaApi {
         cancelToken = null;
       }
 
-      final plainResponse = await dio(cookies: cookies, timeout: 15000).post(
+      final _dio = dio(cookies: cookies, timeout: 15000, proxy: _getProxy(formData['board']));
+
+      final plainResponse = await _dio.post(
         uri,
         cancelToken: cancelToken,
         data: FormData.fromMap(formData),
@@ -265,5 +281,32 @@ class MakabaApi {
         throw MyException('Server error: ${e.toString()}');
       }
     }
+  }
+
+  Future<String> _fetchArchiveThread(String uri) async {
+    final archiveUri = uri.replaceFirst('.json', '.html');
+    try {
+      final response = await dio().get(archiveUri);
+      if (response.statusCode == 200) {
+        final newUri = response.realUri.toString().replaceFirst('.html', '.json');
+        return await _safeRequest(newUri);
+      } else {
+        throw NotFoundException();
+      }
+    } catch (e) {
+      throw NotFoundException();
+    }
+  }
+
+  String _getProxy(String boardName) {
+    if (!my.prefs.getBool('dvach_proxy_enabled')) {
+      return null;
+    }
+    final boards = my.prefs.getString('dvach_proxy_boards').replaceAll(' ', ',').split(',');
+    if (boards.isEmpty || boards.contains(boardName)) {
+      return my.prefs.getString('dvach_proxy').replaceFirst(RegExp(r'https?://'), '');
+    }
+
+    return null;
   }
 }

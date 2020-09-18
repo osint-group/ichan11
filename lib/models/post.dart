@@ -3,7 +3,6 @@ import 'package:hive/hive.dart';
 import 'package:iChan/models/thread.dart';
 import 'package:iChan/services/enums.dart';
 import 'package:iChan/services/exports.dart';
-import 'package:iChan/services/helper.dart';
 import 'package:iChan/services/htmlz.dart';
 import 'package:iChan/services/my.dart' as my;
 import 'media.dart';
@@ -52,12 +51,12 @@ class Post extends HiveObject {
       isOp: json['op'] as int == 1,
       isBanned: json['banned'] as int == 1,
       outerId: json['postId'],
-      counter: json['number'] as int,
+      counter: (json['number'] as int) ?? 0,
       email: _email,
       isSage: _email.toLowerCase() == "sage",
       mediaFiles: json['files'] ?? [],
       platform: json['platform'],
-      repliesParent: json['repliesParent'],
+      repliesParent: json['repliesParent'] ?? [],
     );
     _post.replies = [];
     _post.extras = {};
@@ -180,18 +179,6 @@ class Post extends HiveObject {
 
   bool isHighlighted = false;
 
-  // Map<String, dynamic> toJson(Thread thread) {
-  //   return {
-  //     'platform': Platform.dvach,
-  //     'outerId': outerId,
-  //     'threadId': thread.outerId,
-  //     'boardName': thread.boardName,
-  //     'body': body,
-  //     'my': isMine,
-  //     'timestamp': timestamp,
-  //   };
-  // }
-
   String get nameToOutput => _nameToOutput ??= setNameToOutput();
 
   String setNameToOutput() {
@@ -213,7 +200,7 @@ class Post extends HiveObject {
     }
 
     if (my.contextTools.isVerySmallHeight && result.length >= 10) {
-      result = Helper.takeFirst(result, 25, dots: "...");
+      result = result.takeFirst(25, dots: "...");
     }
 
     return result;
@@ -228,13 +215,13 @@ class Post extends HiveObject {
   bool get isNotEmpty => outerId != null;
   bool get isEmpty => !isNotEmpty;
 
-  String get datetime => Helper.formatDate(timestamp * 1000);
+  String get datetime => (timestamp * 1000).formatDate();
   String get cleanBody => _cleanBody ??= Htmlz.cleanTags(body);
   String get parsedBody => Htmlz.parseBody(body);
   String get quotedBody => cleanBody;
   String get nextId => (int.parse(outerId) + 1).toString();
 
-  String get timeAgo => Helper.timestampToHuman(timestamp * 1000);
+  String get timeAgo => (timestamp * 1000).toHumanDate();
 
   bool get isPersisted {
     return my.posts.box.get(toKey) != null;

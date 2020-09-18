@@ -16,15 +16,15 @@ class FavoritesGrid extends StatelessWidget {
           text: "Delete",
           color: my.theme.alertColor,
           onPressed: () {
-            my.favoriteBloc.add(FavoriteDeleted(fav: fav));
-            my.favoriteBloc.add(FavoriteUpdated());
+            my.favoriteBloc.favoriteDeleted(fav);
+            my.favoriteBloc.favoriteUpdated();
           }),
       ActionSheet(
           text: fav.refresh == false ? 'Turn on refresh' : 'Turn off refresh',
           onPressed: () {
             fav.refresh = !fav.refresh;
             fav.save();
-            my.favoriteBloc.add(FavoriteUpdated());
+            my.favoriteBloc.favoriteUpdated();
           }),
     ];
 

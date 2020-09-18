@@ -7,6 +7,7 @@ import 'package:iChan/models/models.dart';
 import 'package:iChan/models/thread_storage.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/repositories/repositories.dart';
+import 'package:iChan/services/my.dart' as my;
 
 enum BoardFilter { all, recent, unvisited }
 
@@ -73,9 +74,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
           _threads.isNotEmpty &&
           _threads.first.boardName == event.board.id &&
           _threads.first.platform == event.board.platform) {
-        final diff = Helper.timeDiffInSeconds(loadedAt);
-        // print('diff = ${diff}');
-        if (diff <= 15 * 60) {
+        if (loadedAt.timeDiffInMinutes <= 15) {
           yield BoardLoaded(threads: _threads, loadedAt: loadedAt);
           return;
         }
@@ -83,6 +82,17 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
       selectedFilter = BoardFilter.all;
 
       yield BoardLoading();
+
+      final nsfwEnabled = event.board.platform == Platform.dvach
+          ? my.prefs.getBool("dvach_nsfw")
+          : my.prefs.getBool("fourchan_nsfw");
+
+      if (my.prefs.isSafe && event.board.isNsfw == true && !nsfwEnabled) {
+        yield const BoardError(
+            message: "NSFW content is not available.\nOpen Settings -> Platform to enable it.",
+            reloadable: false);
+        return;
+      }
 
       try {
         assert(event.board.platform != null);
@@ -325,12 +335,16 @@ class BoardReloaded extends BoardState {
 }
 
 class BoardError extends BoardState {
-  const BoardError({this.message = "Error"});
+  const BoardError({
+    this.message = "Error",
+    this.reloadable = true,
+  });
 
   final String message;
+  final bool reloadable;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message, reloadable];
 
   List<Thread> get threads => null;
 }

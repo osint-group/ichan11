@@ -52,15 +52,19 @@ class _UploadsSettingsPageState extends State<UploadsSettingsPage> {
               if (val == false) {
                 my.prefs.put('convert_png_to_jpg', false);
               }
-              setState(() {});
+              setState(() {
+                my.prefs.put('compress_images', val);
+              });
             },
           ),
           MenuSwitch(
             label: "Convert PNG to JPG",
             field: "convert_png_to_jpg",
             enabled: my.prefs.getBool('compress_images'),
-            onChanged: (_) {
-              setState(() {});
+            onChanged: (val) {
+              setState(() {
+                my.prefs.put('convert_png_to_jpg', val);
+              });
             },
           ),
           MenuTextField(
@@ -68,9 +72,8 @@ class _UploadsSettingsPageState extends State<UploadsSettingsPage> {
             boxField: "compress_image_resolution",
             keyboardType: TextInputType.number,
             enabled: my.prefs.getBool('compress_images'),
-            onChanged: (String val) {
+            onSubmitted: (String val) {
               fieldChanged("compress_image_resolution", val);
-              return false;
             },
           ),
           menuDivider,

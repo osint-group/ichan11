@@ -52,14 +52,7 @@ class SearchData {
 }
 
 class ThreadData {
-  ThreadData({
-    @required this.thread,
-    this.posts = const [],
-    // this.mediaList = const [],
-    // this.myPosts = const [],
-    // this.replies = const {},
-    this.status = ThreadStatus.empty,
-  }) : threadStorage = ThreadStorage.fromThread(thread);
+  ThreadData({@required this.thread}) : threadStorage = ThreadStorage.fromThread(thread);
 
   factory ThreadData.fromThreadLink(ThreadLink threadLink) {
     final result = ThreadData(thread: Thread.fromThreadLink(threadLink));
@@ -73,8 +66,8 @@ class ThreadData {
   final ScrollData scrollData = ScrollData();
   final SearchData searchData = SearchData();
   Thread thread;
-  List<Post> posts;
-  ThreadStatus status;
+  List<Post> posts = [];
+  ThreadStatus status = ThreadStatus.empty;
   int refreshedAt = 0;
 
   List<Media> get mediaList => thread.mediaFiles ?? [];
@@ -86,8 +79,10 @@ class ThreadData {
     }
 
     if (threadStorage.rememberPostId.isEmpty) {
+      // print("Getting index from fav unread");
       return unreadPostIndex;
     } else {
+      // print("Getting index from fav remember: ${threadStorage.rememberPostId}");
       return postIdToIndex(threadStorage.rememberPostId);
     }
   }
@@ -132,13 +127,6 @@ class ThreadData {
 
   String get unreadPostId => threadStorage.unreadPostId;
   String get rememberPostId => threadStorage.rememberPostId;
-
   bool get isFavorite => threadStorage.isFavorite;
-
-  // bool get isUnread => scrollIndex == -1;
-
   bool get isReadable => status == ThreadStatus.loaded || status == ThreadStatus.cached;
-
-  // bool get isAnimateLoading =>
-  //     status == ThreadStatus.empty || (posts.length - scrollIndex) <= 10;
 }

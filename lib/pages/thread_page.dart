@@ -58,7 +58,7 @@ class _ThreadPageState extends State<ThreadPage> with MediaActions {
     );
 
     if (my.prefs.getBool('disable_autoturn')) {
-      Helper.setAutoturn('portrait');
+      System.setAutoturn('portrait');
     }
 
     final data = {
@@ -100,6 +100,7 @@ class _ThreadPageState extends State<ThreadPage> with MediaActions {
           transparent: true,
           onStatusBarTap: () => itemScrollController.jumpTo(index: 0),
           previousPageTitle: widget.previousPageTitle,
+          backgroundColor: my.theme.postBackgroundColor,
           middle: GestureDetector(
             onTap: () {
               Interactive(context).modalList(['Go to board', 'Scroll to top']).then((val) {
@@ -187,7 +188,7 @@ class _ThreadPageState extends State<ThreadPage> with MediaActions {
       }
       Interactive(context).message(content: "Images has been saved");
     } else if (result == 'open') {
-      return await Helper.launchUrl(thread.url);
+      return await System.launchUrl(thread.url);
     }
   }
 

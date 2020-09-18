@@ -24,6 +24,18 @@ extension StringExtension on String {
     }
   }
 
+  String takeFirst(int number, {String dots}) {
+    if (length <= number) {
+      return this;
+    } else {
+      String result = substring(0, number);
+      if (dots != null) {
+        result = "${result.trim()}$dots";
+      }
+      return result;
+    }
+  }
+
   String plur(num val) {
     final key = numToPluralKey(val);
     return '$this.$key'.tr(args: [val.toString()]);
@@ -49,4 +61,64 @@ extension ListPresence<T> on List<T> {
 extension Screen on BuildContext {
   double get screenHeight => MediaQuery.of(this).size.height;
   double get screenWidth => MediaQuery.of(this).size.width;
+}
+
+extension DateExtension on int {
+  int get timeDiff => DateTime.now().millisecondsSinceEpoch - this;
+  int get timeDiffInSeconds => timeDiff ~/ 1000;
+  double get timeDiffInMinutes => timeDiffInSeconds / 60;
+  double get timeDiffInHours => timeDiffInMinutes / 60;
+
+  String formatDate({bool year = true, bool compact = false}) {
+    final DateTime date = DateTime.fromMillisecondsSinceEpoch(this);
+    String str;
+
+    if (compact) {
+      if (timeDiffInSeconds <= 24 * 3600) {
+        str = 'HH:mm';
+      } else {
+        str = 'dd.MM.yy';
+      }
+    } else {
+      str = year ? 'dd.MM.yy HH:mm' : 'dd.MM HH:mm';
+    }
+    return DateFormat(str).format(date).toString();
+  }
+
+  String toHumanDate({bool year = true, bool compact = false}) {
+    final elapsed = timeDiff;
+
+    final suffix = 'ago'.tr();
+
+    final num seconds = elapsed / 1000;
+    final num minutes = seconds / 60;
+    final num hours = minutes / 60;
+
+    final keys = compact
+        ? {'min': 'date.compact_minute', 'hour': 'date.compact_hour'}
+        : {'min': 'date.minute', 'hour': 'date.hour'};
+
+    String result;
+    if (seconds < 10) {
+      return 'now'.tr();
+    } else if (seconds < 45) {
+      result = keys['min'].plur(1);
+    } else if (seconds < 90) {
+      result = keys['min'].plur(1);
+    } else if (minutes <= 60) {
+      result = keys['min'].plur(minutes.round());
+    } else if (hours < 24) {
+      final wholeHours = minutes ~/ 60;
+      final minutesLeft = (minutes - wholeHours * 60).round();
+      if (minutesLeft <= 30) {
+        result = keys['hour'].plural(wholeHours);
+      } else {
+        result = keys['hour'].plural(wholeHours + 1);
+      }
+    } else {
+      return formatDate(year: year, compact: compact);
+    }
+
+    return [result, suffix].where((str) => str != null && str.isNotEmpty).join(' ');
+  }
 }

@@ -24,7 +24,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserver {
-  static final listenable = my.prefs.box.listenable(keys: ['classic_mode']);
+  static final listenable = my.prefs.box.listenable(keys: ['favorites_as_blocks']);
 
   @override
   void initState() {
@@ -32,6 +32,7 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
     listenable.addListener(() {
       setState(() {});
     });
+    my.favoriteBloc.reloadFavorites();
     super.initState();
   }
 
@@ -44,7 +45,7 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      my.favoriteBloc.add(FavoriteRefreshAllAuto());
+      my.favoriteBloc.refreshAuto();
     }
   }
 
@@ -55,6 +56,8 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
     final Widget refreshButton =
         BlocBuilder<FavoriteBloc, FavoriteState>(builder: (context, state) {
       final bool isRefreshing = state is FavoriteRefreshInProgress || state is FavoriteRefreshing;
+
+      // print("state = ${state}");
 
       if (isRefreshing) {
         return LoopAnimation<double>(
@@ -88,18 +91,18 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
 
               final result = await Interactive(context).modal(actions);
               if (result == "clear_deleted") {
-                my.favoriteBloc.add(const FavoriteClearDeleted());
+                my.favoriteBloc.clearDeleted();
               } else if (result == "clear_all") {
                 Interactive(context).modalDelete(text: 'Seriously?').then((confirmed) {
                   if (confirmed) {
                     my.favs.box.clear();
-                    my.favoriteBloc.add(FavoriteUpdated());
+                    my.favoriteBloc.favoriteUpdated();
                   }
                 });
               }
             },
             onTap: () {
-              my.favoriteBloc.add(FavoriteRefreshAllPressed());
+              my.favoriteBloc.refreshManual();
             },
             child: Padding(
               padding: const EdgeInsets.all(5.0),
@@ -112,7 +115,9 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
       backGesture: false,
       child: SafeArea(
         child: CupertinoScrollbar(
-          child: my.prefs.isClassic ? const FavoritesGrid() : const FavoritesList(),
+          child: my.prefs.getBool('favorites_as_blocks')
+              ? const FavoritesGrid()
+              : const FavoritesList(),
         ),
       ),
       middleText: "Favorites",
@@ -126,14 +131,14 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
           text: "Delete",
           color: my.theme.alertColor,
           onPressed: () {
-            my.favoriteBloc.add(FavoriteDeleted(fav: fav));
+            my.favoriteBloc.favoriteDeleted(fav);
           }),
       ActionSheet(
           text: fav.refresh == false ? 'Turn on refresh' : 'Turn off refresh',
           onPressed: () {
             fav.refresh = !fav.refresh;
             fav.save();
-            my.favoriteBloc.add(FavoriteUpdated());
+            my.favoriteBloc.favoriteUpdated();
           }),
     ];
 

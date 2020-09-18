@@ -29,6 +29,7 @@ class GesturesSettingsPage extends StatelessWidget {
               if (val == true) {
                 my.prefs.put('swipe_down_skips_gallery', false);
               }
+              my.prefs.put('disable_media_swipe', val);
             },
           ),
           // const MenuSwitch(

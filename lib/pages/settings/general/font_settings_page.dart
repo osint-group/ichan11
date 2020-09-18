@@ -34,23 +34,22 @@ class FontSettingsPageWidget extends StatefulWidget {
 }
 
 class _FontSettingsPageState extends State<FontSettingsPageWidget> {
-  static final Box prefsBox = Hive.box("prefs");
+  static const defaultFontSize = 15.0;
+  final fontController = TextEditingController();
   double fontSize;
-
-  final fontsizeFieldController = TextEditingController();
-
   String exampleText;
 
   @override
   void initState() {
     super.initState();
-    fontsizeFieldController.text = prefsBox.get("post_font_size", defaultValue: "15.0") as String;
+    fontController.text = my.prefs.get("font_size", defaultValue: defaultFontSize).toString();
+    print("fontController.text = ${fontController.text}");
 
-    if (fontsizeFieldController.text.isNotEmpty) {
-      fontSize = double.parse(fontsizeFieldController.text);
+    if (fontController.text.isNotEmpty) {
+      fontSize = double.parse(fontController.text);
     } else {
-      prefsBox.put("post_font_size", "15.0");
-      fontSize = 15.0;
+      my.prefs.put("font_size", defaultFontSize);
+      fontSize = defaultFontSize;
     }
 
     exampleText = my.prefs.platforms[0] == Platform.dvach ? getRuBody() : getEnBody();
@@ -58,11 +57,14 @@ class _FontSettingsPageState extends State<FontSettingsPageWidget> {
 
   @override
   void dispose() {
+    fontController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentSize = my.prefs.get('font_size', defaultValue: defaultFontSize);
+
     return ListView(
       padding: const EdgeInsets.only(top: Consts.topPadding * 3),
       children: [
@@ -72,14 +74,16 @@ class _FontSettingsPageState extends State<FontSettingsPageWidget> {
           defaultValue: false,
           onChanged: (val) {
             setState(() {
-              prefsBox.put("light_font", val);
+              my.prefs.put('light_font', val);
             });
           },
         ),
         MenuTextField(
-          label: "Post font size",
-          boxField: "post_font_size",
-          value: "15.0",
+          label: 'Post font size',
+          boxField: 'font_size',
+          onSubmitted: (val) {
+            my.prefs.put("font_size", fontSize);
+          },
           onChanged: (val) {
             double parsedVal;
             try {
@@ -91,17 +95,14 @@ class _FontSettingsPageState extends State<FontSettingsPageWidget> {
                 parsedVal = 60;
               }
             } catch (e) {
-              parsedVal = 15.0;
+              parsedVal = currentSize;
             }
 
-            my.prefs.put("post_font_size", parsedVal.toString());
-
             fontSize = parsedVal;
-            return false;
           },
         ),
         ValueListenableBuilder<Box>(
-          valueListenable: my.prefs.box.listenable(keys: ['post_font_size', 'light_font']),
+          valueListenable: my.prefs.box.listenable(keys: ['font_size', 'light_font']),
           builder: (context, box, child) {
             final post = Post(
               body: exampleText,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/adapter.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:iChan/blocs/post_bloc.dart';
 import 'package:iChan/models/thread.dart';
@@ -19,8 +20,12 @@ class FourchanApi {
 
   final webDomain = 'https://boards.4chan.org';
 
-  Dio dio({List<String> cookies, int timeout}) {
-    timeout ??= my.prefs.getBool('slow_connection') ? 15000 : 7000;
+  Dio dio({List<String> cookies, int timeout, String proxy}) {
+    if (proxy == null) {
+      timeout ??= my.prefs.getBool('slow_connection') ? 15000 : 7000;
+    } else {
+      timeout = 30000;
+    }
 
     final options = BaseOptions(
       baseUrl: domain,
@@ -38,6 +43,13 @@ class FourchanApi {
     } else {
       dio.options.headers['cookie'] = cookies.join("; ");
     }
+
+    if (proxy != null) {
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+        client.findProxy = (uri) => "PROXY $proxy";
+      };
+    }
+
     return dio;
   }
 
@@ -95,37 +107,37 @@ class FourchanApi {
 
       final response = await _dio.post(
         "/${formData['board']}/imgboard.php",
-        // cancelToken: cancelToken,
         data: FormData.fromMap(formData),
         onSendProgress: (int sent, int total) {
           my.postBloc.add(AddProgress(bytesSent: sent, bytesTotal: total));
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.data.contains('http-equiv="refresh"')) {
+        return {"ok": true};
+      } else {
         try {
-          return {"ok": true};
-        } catch (e) {
           final error = RegExp(r'<span id="errmsg" style="color: red;">(.+)<\/span')
               .allMatches(response.data)
               .toList()[0];
-          final message = Htmlz.strip(error.group(1)).replaceAll('[Learn More]', '');
-          return {"ok": false, "error": message};
+
+          return {"ok": false, "error": error.group(1)};
+        } catch (e) {
+          return {"ok": false, "error": "Error when trying to delete post"};
         }
-      } else {
-        return {"ok": false, "error": "Error"};
       }
     } on DioError catch (e) {
       print("Dio error is $e, message is ${e.message}");
 
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
-        throw ConnectionTimeoutException();
+        return {"ok": false, "error": "Connection timed out"};
       } else {
-        throw MyException('Server error ${e?.response?.statusCode}');
+        return {"ok": false, "error": 'Server error ${e?.response?.statusCode}'};
       }
     }
   }
 
+  // TODO: DRY
   Future<Map<String, dynamic>> createPost(
       {Map<String, dynamic> formData, List<String> cookies, CancelToken cancelToken}) async {
     try {
@@ -143,6 +155,14 @@ class FourchanApi {
       if (cookies == null || cookies.isEmpty) {
         final cookieJar = PersistCookieJar(dir: Consts.appDocDir.path);
         _dio.interceptors.add(CookieManager(cookieJar));
+      }
+
+      final proxy = _getProxy(formData['board']);
+
+      if (proxy != null) {
+        (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+          client.findProxy = (uri) => "PROXY $proxy";
+        };
       }
 
       final response = await _dio.post(
@@ -226,5 +246,17 @@ class FourchanApi {
         throw MyException('Server error: ${e.toString()}');
       }
     }
+  }
+
+  String _getProxy(String boardName) {
+    if (!my.prefs.getBool('fourchan_proxy_enabled')) {
+      return null;
+    }
+    final boards = my.prefs.getString('fourchan_proxy_boards').replaceAll(' ', ',').split(',');
+    if (boards.isEmpty || boards.contains(boardName)) {
+      return my.prefs.getString('fourchan_proxy').replaceFirst(RegExp(r'https?://'), '');
+    }
+
+    return null;
   }
 }

@@ -4,12 +4,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iChan/pages/thread/thread.dart';
 import 'package:iChan/services/consts.dart';
 import 'package:iChan/services/my.dart' as my;
+import 'package:iChan/ui/interactive.dart';
 
 class MenuSwitch extends StatelessWidget {
   const MenuSwitch({
     @required this.label,
     @required this.field,
     this.defaultValue,
+    this.hint,
     this.onChanged,
     this.isFirst = false,
     this.isLast = false,
@@ -18,11 +20,60 @@ class MenuSwitch extends StatelessWidget {
 
   final String label;
   final String field;
+  final String hint;
   final bool defaultValue;
   final Function(bool) onChanged;
   final bool isFirst;
   final bool isLast;
   final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        if (hint != null) {
+          Interactive(context).message(content: hint);
+        }
+      },
+      child: Container(
+        height: Consts.menuItemHeight,
+        padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding * 1.5),
+        decoration: BoxDecoration(color: my.theme.backgroundMenuColor, border: makeBorder()),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: TextStyle(color: textColor())),
+            ValueListenableBuilder(
+              valueListenable: my.prefs.box.listenable(keys: [field]),
+              builder: (context, box, widget) {
+                return CupertinoSwitch(
+                    value: box.get(field, defaultValue: defaultValue) as bool,
+                    onChanged: (val) {
+                      if (!enabled) {
+                        return;
+                      }
+                      if (onChanged == null) {
+                        box.put(field, val);
+                      } else {
+                        onChanged(val);
+                      }
+                    });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color textColor() {
+    if (enabled) {
+      return my.theme.foregroundBrightColor;
+    } else {
+      return my.theme.foregroundBrightColor.withOpacity(0.5);
+    }
+  }
 
   Border makeBorder() {
     if (isFirst) {
@@ -32,46 +83,5 @@ class MenuSwitch extends StatelessWidget {
     } else {
       return Border(top: BorderSide(color: my.theme.navBorderColor));
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: Consts.menuItemHeight,
-      padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding * 1.5),
-      decoration: BoxDecoration(color: my.theme.backgroundMenuColor, border: makeBorder()),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label,
-              style: TextStyle(
-                color: enabled
-                    ? my.theme.foregroundBrightColor
-                    : my.theme.foregroundBrightColor.withOpacity(0.5),
-              )),
-          ValueListenableBuilder(
-            valueListenable: my.prefs.box.listenable(keys: [field]),
-            builder: (context, box, widget) {
-              return CupertinoSwitch(
-                  value: box.get(field, defaultValue: defaultValue) as bool,
-                  onChanged: (val) {
-                    if (!enabled) {
-                      return;
-                    }
-
-                    if (onChanged == null) {
-                      box.put(field, val);
-                    } else {
-                      final result = onChanged(val);
-                      if (result != false) {
-                        box.put(field, val);
-                      }
-                    }
-                  });
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

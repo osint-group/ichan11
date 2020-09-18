@@ -21,7 +21,7 @@ class GalleryPage extends StatelessWidget with MediaActions {
   @override
   Widget build(BuildContext context) {
     if (my.prefs.getBool('disable_autoturn')) {
-      Helper.setAutoturn('auto');
+      System.setAutoturn('auto');
     }
 
     if (!my.prefs.getBool('enable_media')) {

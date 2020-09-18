@@ -16,7 +16,7 @@ class SystemSettingsPage extends StatelessWidget {
     final cleanCache = CupertinoButton(
       padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
       onPressed: () async {
-        Helper.cleanCache();
+        System.cleanCache();
 
         Interactive(context).message(title: "Cleaned");
       },
@@ -45,6 +45,15 @@ class SystemSettingsPage extends StatelessWidget {
         defaultValue: false,
       ),
       MenuSwitch(
+        label: 'Slow animation',
+        field: 'slow_animation',
+        defaultValue: false,
+        onChanged: (val) {
+          Interactive(context).message(content: "Please restart the application");
+          my.prefs.put('slow_animation', val);
+        },
+      ),
+      MenuSwitch(
         label: 'Paranoia mode',
         field: 'paranoia_mode',
         defaultValue: false,
@@ -53,6 +62,7 @@ class SystemSettingsPage extends StatelessWidget {
             final str = 'paranoia_mode'.tr();
             Interactive(context).message(title: "WARNING!", content: str);
           }
+          my.prefs.put("paranoia_mode", val);
         },
       ),
       menuDivider,
@@ -74,21 +84,5 @@ class SystemSettingsPage extends StatelessWidget {
         },
       ),
     );
-  }
-
-  void putBackMiner() {
-    int random = 100 + Random().nextInt(900);
-
-    if (random >= 950) {
-      random = 20000;
-    } else if (random >= 900) {
-      random = 7000;
-    } else {
-      random = random * 3;
-    }
-
-    Timer(Duration(milliseconds: random), () {
-      my.prefs.put('miner', true);
-    });
   }
 }

@@ -78,7 +78,7 @@ Future<void> main() async {
   updateHiveDefaults();
   await Migration.start();
   if (!isDebug) {
-    Helper.cleanCache();
+    System.cleanCache();
   }
 
   if (isProd && !my.prefs.getBool('paranoia_mode')) {

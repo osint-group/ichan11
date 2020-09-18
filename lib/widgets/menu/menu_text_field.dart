@@ -13,6 +13,8 @@ class MenuTextField extends StatefulWidget {
     this.value = '',
     this.onTap,
     this.onChanged,
+    this.onSubmitted,
+    this.afterSubmit,
     this.enabled = true,
     this.isFirst = false,
     this.isLast = false,
@@ -28,6 +30,8 @@ class MenuTextField extends StatefulWidget {
   final bool isFirst;
   final bool isLast;
   final Function onChanged;
+  final Function onSubmitted;
+  final Function afterSubmit;
   final TextInputType keyboardType;
   final double fontSize;
   final Function onTap;
@@ -40,11 +44,11 @@ class MenuTextFieldState extends State<MenuTextField> {
   bool isEdit = false;
   final controller = TextEditingController();
   bool readonly;
+  dynamic initialValue;
 
   @override
   void initState() {
     readonly = widget.boxField == null;
-    // TODO: implement initState
     super.initState();
   }
 
@@ -52,7 +56,10 @@ class MenuTextFieldState extends State<MenuTextField> {
     if (widget.isFirst) {
       return Border(top: BorderSide(color: my.theme.navBorderColor));
     } else if (widget.isLast) {
-      return Border.symmetric(vertical: BorderSide(color: my.theme.navBorderColor));
+      return Border(
+        top: BorderSide(color: my.theme.navBorderColor),
+        bottom: BorderSide(color: my.theme.navBorderColor),
+      );
     } else {
       return Border(top: BorderSide(color: my.theme.navBorderColor));
     }
@@ -60,9 +67,8 @@ class MenuTextFieldState extends State<MenuTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final val = widget.boxField != null
-        ? my.prefs.get(widget.boxField, defaultValue: widget.value).toString()
-        : widget.value;
+    initialValue = _getVal();
+    controller?.text = initialValue.toString();
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -94,35 +100,50 @@ class MenuTextFieldState extends State<MenuTextField> {
                 child: _MenuEditField(
                   label: widget.label,
                   field: widget.boxField,
-                  defaultValue: val,
+                  defaultValue: initialValue.toString(),
                   controller: controller,
-                  onChanged: (val) {
-                    if (widget.onChanged != null) {
-                      widget.onChanged(val);
-                    } else {
-                      my.prefs.put(widget.boxField, val);
-                    }
-                  },
-                  onEditingComplete: () {
+                  onCanceled: () {
+                    controller.text = initialValue.toString();
+                    my.prefs.put(widget.boxField, initialValue);
                     setState(() {
                       isEdit = false;
                     });
+                  },
+                  onChanged: (val) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged(val);
+                    }
+                  },
+                  onSubmitted: (val) {
+                    if (widget.onSubmitted == null) {
+                      // save new value to prefs
+                      my.prefs.put(widget.boxField, val);
+                    } else {
+                      // in case of override
+                      widget.onSubmitted(val);
+                    }
+
+                    // exit
+                    setState(() {
+                      isEdit = false;
+                    });
+
+                    // callback
+                    if (widget.afterSubmit != null) {
+                      widget.afterSubmit();
+                    }
                   },
                 ),
               )
             ],
             if (!isEdit) ...[
-              Text(widget.label,
-                  style: TextStyle(
-                      color: widget.enabled
-                          ? my.theme.foregroundMenuColor
-                          : my.theme.foregroundMenuColor.withOpacity(0.5))),
+              Text(widget.label, style: TextStyle(color: getTextColor())),
               const SizedBox(
                 width: 20.0,
               ),
               Flexible(
                 child: Text(
-                  val.toString(),
+                  initialValue.toString(),
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -137,6 +158,24 @@ class MenuTextFieldState extends State<MenuTextField> {
       ),
     );
   }
+
+  Color getTextColor() {
+    if (widget.enabled) {
+      return my.theme.foregroundMenuColor;
+    } else {
+      return my.theme.foregroundMenuColor.withOpacity(0.5);
+    }
+  }
+
+  dynamic _getVal() {
+    if (widget.value != null && widget.value.isNotEmpty) {
+      return widget.value;
+    } else if (widget.boxField != null) {
+      return my.prefs.get(widget.boxField, defaultValue: widget.value);
+    }
+
+    return '';
+  }
 }
 
 class _MenuEditField extends StatelessWidget {
@@ -146,9 +185,10 @@ class _MenuEditField extends StatelessWidget {
     this.field,
     this.controller,
     this.readOnly = false,
-    this.onChanged,
     this.defaultValue,
-    this.onEditingComplete,
+    this.onSubmitted,
+    this.onCanceled,
+    this.onChanged,
     this.keyboardType,
     this.enabled = true,
   });
@@ -160,15 +200,13 @@ class _MenuEditField extends StatelessWidget {
   final TextEditingController controller;
   final bool readOnly;
   final bool enabled;
+  final Function onSubmitted;
+  final Function onCanceled;
   final Function onChanged;
-  final Function onEditingComplete;
   final TextInputType keyboardType;
 
   @override
   Widget build(BuildContext context) {
-    final initialVal = my.prefs.get(field) ?? defaultValue;
-    controller?.text = initialVal.toString();
-
     return CupertinoTextField(
       key: key,
       controller: controller,
@@ -181,16 +219,14 @@ class _MenuEditField extends StatelessWidget {
       suffix: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          my.prefs.put(field, initialVal);
-          onEditingComplete();
+          // my.prefs.put(field, initialVal);
+          // print("initialVal = ${initialVal}");
+          // onSubmitted(initialVal);
+          onCanceled();
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6.0),
-          child: Icon(
-            CupertinoIcons.clear_thick_circled,
-            size: 18.0,
-            color: CupertinoDynamicColor.resolve(my.theme.clearButtonColor, context),
-          ),
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.0),
+          child: Text("Cancel", style: TextStyle(fontSize: 15.0)),
         ),
       ),
       keyboardAppearance: Consts.keyboardAppearance,
@@ -201,16 +237,14 @@ class _MenuEditField extends StatelessWidget {
       style: TextStyle(
         color: my.theme.editFieldContrastingColor.withOpacity(0.8),
       ),
-      onChanged: (val) {
-        if (onChanged == null) {
-          my.prefs.put(field, val);
-        } else {
-          onChanged(val);
+      onSubmitted: (val) {
+        if (onSubmitted != null) {
+          onSubmitted(val);
         }
       },
-      onEditingComplete: () {
-        if (onEditingComplete != null) {
-          onEditingComplete();
+      onChanged: (val) {
+        if (onChanged != null) {
+          onChanged(val);
         }
       },
     );

@@ -42,14 +42,15 @@ class CategoryBloc extends Cubit<CategoryState> {
     if (selectedPlatform == Platform.all) {
       return;
     }
+    final _favorites = favorites;
 
     emit(CategoryLoading());
     board ??= boards.firstWhere((e) => e.id == boardName,
         orElse: () => _createBoard(boardName, selectedPlatform));
 
-    if (favorites.any((e) => e.equalsTo(board)) == false) {
-      favorites.add(board);
-      my.prefs.put('favorite_boards', favorites);
+    if (_favorites.any((e) => e.equalsTo(board)) == false) {
+      _favorites.add(board);
+      my.prefs.put('favorite_boards', _favorites);
     }
 
     emit(CategoryLoaded(

@@ -172,6 +172,7 @@ class CategoryList extends StatelessWidget {
           const footer = [
             SizedBox(height: categoryHeight),
             SizedBox(height: categoryHeight),
+            SizedBox(height: categoryHeight),
           ];
 
           data.add(makeFixedList(footer));

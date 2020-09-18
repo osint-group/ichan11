@@ -112,7 +112,7 @@ class _ThreadNavBarState extends State<ThreadNavBar> {
             } else {
               threadData.addFavorite();
             }
-            my.favoriteBloc.add(FavoriteUpdated());
+            my.favoriteBloc.favoriteUpdated();
           },
           child: ValueListenableBuilder<Box<ThreadStorage>>(
             valueListenable: my.favs.box.listenable(keys: [widget.thread.toKey]),
@@ -445,8 +445,8 @@ class UnreadRefreshButton extends StatelessWidget {
 
             // print(
             //     'pos = ${pos}, threadData.posts.length = ${threadData.posts.length}, val.last.itemTrailingEdge = ${val.last.itemTrailingEdge}');
-            // print('Helper.timeDiff(cooldown) = ${Helper.timeDiff(cooldown)}');
-            final cooldowned = Helper.timeDiff(cooldown) >= 2000;
+            // print('System.timeDiff(cooldown) = ${System.timeDiff(cooldown)}');
+            final cooldowned = cooldown.timeDiff >= 2000;
 
             if (pullToRefresh && cooldowned) {
               cooldown = DateTime.now().millisecondsSinceEpoch;
