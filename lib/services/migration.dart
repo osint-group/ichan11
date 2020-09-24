@@ -4,7 +4,7 @@ import 'package:iChan/services/enums.dart';
 import 'package:iChan/services/my.dart' as my;
 
 class Migration {
-  static const current = 7;
+  static const current = 8;
 
   static Future start() async {
     if (my.prefs.getInt('migration') == 0) {
@@ -194,6 +194,19 @@ class Migration {
       my.prefs.setStats('media_views', mediaViews);
 
       my.prefs.put('migration', 7);
+    }
+
+    if (my.prefs.getInt('migration') == 7) {
+      final favs = List<ThreadStorage>.from(my.favs.values);
+      for (final fav in favs) {
+        if (fav.refreshedAt == null || fav.extras == null || fav.extras.isEmpty) {
+          fav.refreshedAt ??= DateTime.now().millisecondsSinceEpoch;
+          fav.extras['last_post_ts'] ??= DateTime.now().millisecondsSinceEpoch;
+          fav.save();
+        }
+      }
+
+      my.prefs.put('migration', 8);
     }
   }
 

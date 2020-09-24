@@ -54,7 +54,7 @@ class FavoriteBloc extends Cubit<FavoriteState> {
 
     final _list = (myThreads + lastVisited + _list0 + repliesList).toSet().toList();
 
-    Log.warn("Refresh ${_list.length} items");
+    // Log.warn("Refresh ${_list.length} items");
     await _refeshAll(_list, force: _list.length <= 5);
     my.prefs.incrStats('favs_refreshed');
 
@@ -334,8 +334,8 @@ class FavoriteBloc extends Cubit<FavoriteState> {
       result = refreshDiff >= 60 * 15;
     }
 
-    Log.warn(
-        "Thread: ${fav.threadId}, hours: ${hoursDiff}, refreshed $refreshDiff sec ago, result is $result");
+    // Log.warn(
+    //     "Thread: ${fav.threadId}, hours: ${hoursDiff}, refreshed $refreshDiff sec ago, result is $result");
 
     return result;
   }

@@ -54,7 +54,12 @@ void updateHiveDefaults() {
   setDefault('big_image_size', 5.0);
   setDefault('medium_video_size', 5.0);
   setDefault('big_video_size', 20.0);
-  setDefault('menu_margin', 40.0);
+  if (isIos) {
+    setDefault('menu_margin', 38.0);
+  } else {
+    setDefault('menu_margin', 0.0);
+  }
+  setDefault('font_size', 15.0);
 
   setDefault('clean_exif', true);
   setDefault('convert_png_to_jpg', true);

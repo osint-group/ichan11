@@ -1,5 +1,5 @@
 name: iChan
-version: 1.20.9181934+940
+version: 1.20.9211316+950
 publish_to: none
 description: Forum reader
 environment:
@@ -52,7 +52,7 @@ dependencies:
   retry: ^3.0.1
   flutter_apns:
     git: git@github.com:FloPMT/flutter-apns.git
-  pull_to_refresh: ^1.6.0
+  pull_to_refresh: ^1.6.2
   flutter_slidable: ^0.5.4
   cookie_jar: ^1.0.0
   dio_cookie_manager: ^1.0.0
