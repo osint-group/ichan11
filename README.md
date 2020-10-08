@@ -1,6 +1,6 @@
 # iChan (iOS + Android)
 
-Open source cross-platform client for popular imageboards: 4chan.org and 2ch.hk.
+Open source cross-platform client for popular imageboards: 4chan.org and 2ch.hk
 
 Features:
 
