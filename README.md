@@ -1,6 +1,6 @@
-# iChan
+# iChan (iOS + Android)
 
-Open source client for popular imageboards: 4chan.org and 2ch.hk.
+Open source cross-platform client for popular imageboards: 4chan.org and 2ch.hk.
 
 Features:
 
@@ -8,14 +8,13 @@ Features:
 - Low battery consumption
 - Function to save all images in thread
 - Instant video playback
+- Cached videos, images and threads
 - Remember position in threads
 - Save threads and read offline
 
-![Threads](https://zchan.app/assets/screen1.jpg)
+![Screen1](https://zchan.app/assets/screen4.png)
 
-![Post form](https://zchan.app/assets/screen2.jpg)
-
-![Favorites](https://zchan.app/assets/screen3.jpg)
+![Screen2](https://zchan.app/assets/screen5.png)
 
 ## Install on iOS
 
@@ -25,7 +24,7 @@ There are two ways to install the application.
 
 - Download altstore.io and install it in your iPhone or iPad
 - Download ipa file: https://zchan.app/download/iChan.ipa
-- Open altstore app and select that ipa to install it
+- Open altstore app and select that ipa to install
 
 2. Using my Apple Developer Certificate (no jailbreak required)
 
