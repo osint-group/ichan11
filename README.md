@@ -12,9 +12,9 @@ Features:
 - Remember position in threads
 - Save threads and read offline
 
-![Screen1](https://zchan.app/assets/screen4.png)
+![Screen1](https://zchan.app/assets/screen5.png)
 
-![Screen2](https://zchan.app/assets/screen5.png)
+![Screen2](https://zchan.app/assets/screen4.png)
 
 ## Install on iOS
 
