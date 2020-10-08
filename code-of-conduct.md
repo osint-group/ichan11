@@ -46,3 +46,7 @@ Anyone asked to stop unacceptable behavior is expected to comply immediately. If
 This code of conduct is based on the [Open Code of Conduct](https://github.com/todogroup/opencodeofconduct) from the [TODOGroup](http://todogroup.org).
 
 We are thankful for their work and all the communities who have paved the way with code of conducts.
+
+## PS
+
+This document has no real power and is only needed to insult and trigger some people and make them complain about it
