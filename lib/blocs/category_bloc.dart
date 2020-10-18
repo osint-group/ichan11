@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,22 +19,28 @@ class CategoryBloc extends Cubit<CategoryState> {
   List<String> categories;
   Platform selectedPlatform;
 
-  List<Board> get favorites => my.prefs.get('favorite_boards', defaultValue: []).cast<Board>();
+  List<Board> get favorites =>
+      my.prefs.get('favorite_boards', defaultValue: []).cast<Board>();
 
   List<Board> platformFavorites() {
     return favorites.where((e) => e.platform == selectedPlatform).toList();
   }
 
   List<Board> filterByNameStarts(String query) {
-    return boards.where((e) => e.name.toLowerCase().startsWith(query.toLowerCase())).toList();
+    return boards
+        .where((e) => e.name.toLowerCase().startsWith(query.toLowerCase()))
+        .toList();
   }
 
   List<Board> filterByNameContains(String query) {
-    return boards.where((e) => e.name.toLowerCase().contains(query.toLowerCase())).toList();
+    return boards
+        .where((e) => e.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   List<Board> filterByIdStarts(String query) {
-    final strict = boards.where((e) => e.id.toLowerCase() == query.toLowerCase()).toList();
+    final strict =
+        boards.where((e) => e.id.toLowerCase() == query.toLowerCase()).toList();
     final others = boards
         .where((e) =>
             e.id.toLowerCase() != query.toLowerCase() &&
@@ -46,7 +50,8 @@ class CategoryBloc extends Cubit<CategoryState> {
     return strict + others;
   }
 
-  Board _createBoard(String id, Platform platform) => Board(id, name: id, platform: platform);
+  Board _createBoard(String id, Platform platform) =>
+      Board(id, name: id, platform: platform);
 
   void favoriteBoard({String boardName, Board board}) {
     if (selectedPlatform == Platform.all) {
@@ -73,8 +78,8 @@ class CategoryBloc extends Cubit<CategoryState> {
 
   void unfavoriteBoard(Board board) {
     emit(CategoryLoading());
-    my.prefs.box
-        .put('favorite_boards', favorites.where((e) => e.equalsTo(board) == false).toList());
+    my.prefs.box.put('favorite_boards',
+        favorites.where((e) => e.equalsTo(board) == false).toList());
 
     emit(CategoryLoaded(
       boards: boards,
@@ -96,8 +101,10 @@ class CategoryBloc extends Cubit<CategoryState> {
         platform: selectedPlatform,
       ));
     } else {
-      filteredBoards = filterByIdStarts(query).presence ?? filterByNameContains(query);
-      final filteredCategories = filteredBoards.map((e) => e.category).toSet().toList();
+      filteredBoards =
+          filterByIdStarts(query).presence ?? filterByNameContains(query);
+      final filteredCategories =
+          filteredBoards.map((e) => e.category).toSet().toList();
 
       emit(CategoryLoaded(
         boards: filteredBoards,

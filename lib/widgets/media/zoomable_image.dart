@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:iChan/models/models.dart';
-// import 'package:iChan/pages/thread/animated_opacity_item.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/widgets/media/slideable_image.dart';
 
@@ -23,7 +21,8 @@ class ZoomableImage extends StatefulWidget {
   _ZoomableImageState createState() => _ZoomableImageState();
 }
 
-class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateMixin {
+class _ZoomableImageState extends State<ZoomableImage>
+    with TickerProviderStateMixin {
   DoubleClickAnimationListener _doubleClickAnimationListener;
   AnimationController _doubleClickAnimationController;
   Animation<double> _doubleClickAnimation;
@@ -46,8 +45,8 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
 
   @override
   void initState() {
-    _doubleClickAnimationController =
-        AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
+    _doubleClickAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 150), vsync: this);
     super.initState();
   }
 
@@ -81,10 +80,11 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
     _doubleClickAnimationListener = () {
       //print(_animation.value);
       state.handleDoubleTap(
-          scale: _doubleClickAnimation.value, doubleTapPosition: pointerDownPosition);
+          scale: _doubleClickAnimation.value,
+          doubleTapPosition: pointerDownPosition);
     };
-    _doubleClickAnimation =
-        _doubleClickAnimationController.drive(Tween<double>(begin: begin, end: end));
+    _doubleClickAnimation = _doubleClickAnimationController
+        .drive(Tween<double>(begin: begin, end: end));
 
     _doubleClickAnimation.addListener(_doubleClickAnimationListener);
 
@@ -120,7 +120,8 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
             mode: ExtendedImageMode.gesture,
             enableSlideOutPage: true,
             filterQuality: FilterQuality.high,
-            heroBuilderForSlidingPage: (Widget result) => heroBuilder(result, widget.file.path),
+            heroBuilderForSlidingPage: (Widget result) =>
+                heroBuilder(result, widget.file.path),
             initGestureConfigHandler: (state) => gestureConfig,
             onDoubleTap: doubleTap,
           ),
@@ -153,13 +154,15 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
         mode: ExtendedImageMode.gesture,
         enableSlideOutPage: true,
         filterQuality: FilterQuality.high,
-        heroBuilderForSlidingPage: (Widget result) => heroBuilder(result, media.thumbnailUrl),
+        heroBuilderForSlidingPage: (Widget result) =>
+            heroBuilder(result, media.thumbnailUrl),
         onDoubleTap: doubleTap,
         initGestureConfigHandler: (state) => gestureConfig,
         handleLoadingProgress: true,
         loadStateChanged: (ExtendedImageState state) {
-          final percent = (state.loadingProgress?.cumulativeBytesLoaded ?? 0.0) /
-              (state.loadingProgress?.expectedTotalBytes ?? 1.0);
+          final percent =
+              (state.loadingProgress?.cumulativeBytesLoaded ?? 0.0) /
+                  (state.loadingProgress?.expectedTotalBytes ?? 1.0);
           switch (state.extendedImageLoadState) {
             case LoadState.loading:
               return Stack(
@@ -198,7 +201,8 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
       strokeWidth: 25.0,
       value: percent,
       backgroundColor: my.theme.backgroundColor.withOpacity(0.3),
-      valueColor: AlwaysStoppedAnimation<Color>(CupertinoColors.white.withOpacity(0.5)),
+      valueColor:
+          AlwaysStoppedAnimation<Color>(CupertinoColors.white.withOpacity(0.5)),
     );
   }
 
@@ -207,7 +211,8 @@ class _ZoomableImageState extends State<ZoomableImage> with TickerProviderStateM
       value: percent,
       minHeight: 1,
       backgroundColor: my.theme.inactiveColor.withOpacity(0.1),
-      valueColor: AlwaysStoppedAnimation<Color>(CupertinoColors.white.withOpacity(0.5)),
+      valueColor:
+          AlwaysStoppedAnimation<Color>(CupertinoColors.white.withOpacity(0.5)),
     );
   }
 }

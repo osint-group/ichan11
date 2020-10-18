@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:iChan/pages/settings/general_links_page.dart';
@@ -14,7 +11,8 @@ class SystemSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cleanCache = CupertinoButton(
-      padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
+      padding: const EdgeInsets.only(
+          left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
       onPressed: () async {
         System.cleanCache();
 
@@ -49,7 +47,8 @@ class SystemSettingsPage extends StatelessWidget {
         field: 'slow_animation',
         defaultValue: false,
         onChanged: (val) {
-          Interactive(context).message(content: "Please restart the application");
+          Interactive(context)
+              .message(content: "Please restart the application");
           my.prefs.put('slow_animation', val);
         },
       ),

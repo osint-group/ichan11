@@ -4,8 +4,6 @@ import 'package:iChan/services/consts.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/widgets/menu/menu.dart';
 import 'package:iChan/services/my.dart' as my;
-import 'package:directory_picker/directory_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MediaSettingsPage extends StatefulWidget {
@@ -114,25 +112,15 @@ class _MediaSettingsPageState extends State<MediaSettingsPage> {
             onTap: () async {
               if (isIos) {
                 if (await Permission.photos.request().isGranted == false) {
-                  Interactive(context).message(content: "Please allow access to photos");
+                  Interactive(context)
+                      .message(content: "Please allow access to photos");
                   return false;
                 }
               } else {
                 if (await Permission.storage.request().isGranted == false) {
-                  Interactive(context).message(content: "Please allow access to directories");
+                  Interactive(context)
+                      .message(content: "Please allow access to directories");
                   return false;
-                }
-
-                final rootDirectory = await getExternalStorageDirectory();
-                final newDirectory = await DirectoryPicker.pick(
-                  context: context,
-                  rootDirectory: rootDirectory,
-                );
-
-                if (newDirectory != null) {
-                  setState(() {
-                    my.prefs.put('media_album', newDirectory.path);
-                  });
                 }
                 return false;
               }

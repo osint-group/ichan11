@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iChan/blocs/post_bloc.dart';
 import 'package:iChan/models/thread.dart';
 import 'package:iChan/services/my.dart' as my;
-import 'package:iChan/services/routz.dart';
 
 class FormAttachmentButtons extends StatelessWidget {
   const FormAttachmentButtons({
@@ -23,13 +22,15 @@ class FormAttachmentButtons extends StatelessWidget {
         CupertinoButton(
           child: FaIcon(FontAwesomeIcons.images, size: iconSize),
           onPressed: () async {
-            my.postBloc.add(AddFiles(files: await FilePicker.getMultiFile(type: FileType.media)));
+            my.postBloc.add(AddFiles(
+                files: await FilePicker.getMultiFile(type: FileType.media)));
           },
         ),
         CupertinoButton(
           child: FaIcon(FontAwesomeIcons.file, size: iconSize),
           onPressed: () async {
-            my.postBloc.add(AddFiles(files: await FilePicker.getMultiFile(type: FileType.any)));
+            my.postBloc.add(AddFiles(
+                files: await FilePicker.getMultiFile(type: FileType.any)));
           },
         ),
       ],

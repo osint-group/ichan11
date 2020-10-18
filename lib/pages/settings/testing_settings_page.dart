@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:iChan/blocs/thread/event.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:iChan/services/my.dart' as my;
@@ -19,7 +18,8 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final cleanButton = CupertinoButton(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
+        padding: const EdgeInsets.only(
+            left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
         color: my.theme.primaryColor,
         onPressed: () {
           setState(() {
@@ -29,7 +29,8 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
         child: const Text("Clean"));
 
     final testButton = CupertinoButton(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
+        padding: const EdgeInsets.only(
+            left: 10.0, right: 10.0, top: 16.0, bottom: 16.0),
         color: my.theme.primaryColor,
         onPressed: () {
           setState(() {});
@@ -69,7 +70,8 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
               label: "Top menu margin",
               boxField: "menu_margin",
               onSubmitted: (val) {
-                final parsed = double.tryParse(val) ?? my.prefs.get('menu_margin');
+                final parsed =
+                    double.tryParse(val) ?? my.prefs.get('menu_margin');
                 my.prefs.put('menu_margin', parsed);
               },
             ),
@@ -94,7 +96,8 @@ class _TestingSettingsPageState extends State<TestingSettingsPage> {
               Container(
                 height: 600,
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: Consts.sidePadding),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Consts.sidePadding),
                   reverse: true,
                   itemCount: Log.length,
                   itemBuilder: (context, index) {

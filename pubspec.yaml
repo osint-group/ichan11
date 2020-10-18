@@ -3,7 +3,7 @@ version: 1.20.9211316+950
 publish_to: none
 description: Forum reader
 environment:
-  sdk: ">=2.9.0 <3.0.0"
+  sdk: ">=2.8.0 <3.0.0"
 dependencies:
   async: ^2.4.1
   http: ^0.12.1
@@ -46,7 +46,6 @@ dependencies:
   universal_html: ^1.2.3
   wc_flutter_share: ^0.2.2
   permission_handler: ^5.0.1+1
-  # audioplayers: ^0.15.1
   disk_space: ^0.0.3
   flutter_secure_storage: ^3.3.3
   retry: ^3.0.1
@@ -60,7 +59,6 @@ dependencies:
   gallery_saver: ^2.0.1
   image_gallery_saver: ^1.5.0
   youtube_player_flutter: ^7.0.0+7
-  # render_metrics: ^1.0.1
   ota_update: ^2.4.1
   flutter_hooks: ^0.13.1
   flutter_image_compress: ^0.7.0
@@ -68,7 +66,6 @@ dependencies:
   receive_sharing_intent: ^1.4.1
   flutter_statusbar_manager: ^2.0.0
   easy_localization: ^2.3.3
-  directory_picker: ^1.0.0
   flutter:
     sdk: flutter
 dev_dependencies:
@@ -77,12 +74,6 @@ dev_dependencies:
   flutter_native_splash: ^0.1.9
   hive_generator: ^0.7.0+2
   build_runner: ^1.8.0
-  # moor_generator: any
-  # test: any
-  # flutter_test:
-  #   sdk: flutter
-  # flutter_driver:
-  #   sdk: flutter
 dependency_overrides:
   permission_handler: ^5.0.1+1
   flutter_svg: ^0.18.0
@@ -90,10 +81,3 @@ flutter:
   uses-material-design: true
   assets:
     - assets/translations/
-flutter_icons:
-  android: launcher_icon
-  image_path: assets/icon/icon.png
-  ios: true
-flutter_native_splash:
-  image: assets/images/splash2.png
-  color: "000000"

@@ -93,12 +93,16 @@ Future<void> main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider<ThreadBloc>(create: (BuildContext context) => my.threadBloc),
+        BlocProvider<ThreadBloc>(
+            create: (BuildContext context) => my.threadBloc),
         BlocProvider<BoardBloc>(create: (BuildContext context) => my.boardBloc),
-        BlocProvider<CategoryBloc>(create: (BuildContext context) => my.categoryBloc),
+        BlocProvider<CategoryBloc>(
+            create: (BuildContext context) => my.categoryBloc),
         BlocProvider<PostBloc>(create: (BuildContext context) => my.postBloc),
-        BlocProvider<FavoriteBloc>(create: (BuildContext context) => my.favoriteBloc),
-        BlocProvider<PlayerBloc>(create: (BuildContext context) => my.playerBloc),
+        BlocProvider<FavoriteBloc>(
+            create: (BuildContext context) => my.favoriteBloc),
+        BlocProvider<PlayerBloc>(
+            create: (BuildContext context) => my.playerBloc),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('ru')],
@@ -124,8 +128,8 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getMediaStream().listen((List<SharedMediaFile> value) {
+    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+        .listen((List<SharedMediaFile> value) {
       my.postBloc.add(AddFiles(sharedFiles: value));
     }, onError: (err) {
       print("getIntentDataStream error: $err");
@@ -146,12 +150,13 @@ class _AppState extends State<App> {
     }
 
     return ValueListenableBuilder(
-      valueListenable:
-          my.prefs.box.listenable(keys: ['theme', 'theme_primary_color', 'theme_background_color']),
+      valueListenable: my.prefs.box.listenable(
+          keys: ['theme', 'theme_primary_color', 'theme_background_color']),
       builder: (context, val, widget) {
         if (!isIos) {
           SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-              statusBarColor: my.theme.navbarBackgroundColor.withOpacity(Consts.navbarOpacity)));
+              statusBarColor: my.theme.navbarBackgroundColor
+                  .withOpacity(Consts.navbarOpacity)));
         }
 
         rebuildAllChildren(context);
@@ -212,7 +217,9 @@ class _AppState extends State<App> {
               primaryContrastingColor: my.theme.primaryContrastingColor,
             ),
             routes: {
-              "/": (context) => my.prefs.platforms.isNotEmpty ? const HomePage() : WelcomePage(),
+              "/": (context) => my.prefs.platforms.isNotEmpty
+                  ? const HomePage()
+                  : WelcomePage(),
             },
           ),
         );
