@@ -1,39 +1,16 @@
-import 'dart:typed_data';
-
-import 'package:extended_image/extended_image.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:iChan/models/media.dart';
 import 'package:iChan/services/exceptions.dart';
-import 'package:iChan/services/file_tools.dart';
 import 'package:iChan/services/my.dart' as my;
 import 'package:iChan/services/exports.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 mixin MediaActions {
   Future<void> shareMedia(Media media) async {
     if (await Permission.photos.request().isGranted == false) {
       throw MyException("Please allow access to photos");
     }
-
-    Uint8List bytes;
-    FileTools fileTools;
-    if (media.isImage) {
-      bytes = await getNetworkImageData(media.url, useCache: true);
-      fileTools = FileTools(path: media.url);
-    } else {
-      final file = await my.cacheManager.getSingleFile(media.url);
-      fileTools = FileTools(file: file);
-      bytes = file.readAsBytesSync();
-    }
-
-    await WcFlutterShare.share(
-      sharePopupTitle: 'Share',
-      fileName: media.name,
-      mimeType: fileTools.mimeType,
-      bytesOfFile: bytes.buffer.asUint8List(),
-    );
   }
 
   Future<bool> saveMedia(Media media) async {

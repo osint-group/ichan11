@@ -28,7 +28,8 @@ class ThreadsList extends StatefulWidget {
 }
 
 class ThreadsListState extends State<ThreadsList> {
-  final scrollController = ScrollController(initialScrollOffset: my.prefs.getDouble('menu_margin'));
+  final scrollController =
+      ScrollController(initialScrollOffset: my.prefs.getDouble('menu_margin'));
   final searchController = TextEditingController();
   final selectedTab = ValueNotifier<BoardFilter>(BoardFilter.all);
   final scrollListener = ValueNotifier<double>(0.0);
@@ -61,11 +62,11 @@ class ThreadsListState extends State<ThreadsList> {
   @override
   void initState() {
     super.initState();
-    my.boardBloc.add(BoardLoadStarted(board: widget.board, query: widget.query));
+    my.boardBloc
+        .add(BoardLoadStarted(board: widget.board, query: widget.query));
     if (widget.query.isNotEmpty) {
       searchController.text = "tag:${widget.query}";
     }
-    my.analytics.setCurrentScreen(screenName: 'boards');
     widget.scrollNotifier.addListener(() {
       scrollController.jumpTo(0.0);
     });
@@ -103,7 +104,8 @@ class ThreadsListState extends State<ThreadsList> {
           return TapToReload(
               enabled: state.reloadable,
               message: state.message,
-              onTap: () => my.boardBloc.add(BoardLoadStarted(board: widget.board)));
+              onTap: () =>
+                  my.boardBloc.add(BoardLoadStarted(board: widget.board)));
         }
 
         if (state is BoardLoaded) {
@@ -157,7 +159,11 @@ class ThreadsListState extends State<ThreadsList> {
           final pullToRefresh = ValueListenableBuilder<double>(
               valueListenable: scrollListener,
               builder: (BuildContext context, value, Widget child) {
-                final height = isIos ? my.contextTools.hasHomeButton ? 65.0 : 90.0 : 70.0;
+                final height = isIos
+                    ? my.contextTools.hasHomeButton
+                        ? 65.0
+                        : 90.0
+                    : 70.0;
 
                 if (value >= 1.0 || isRefreshing) {
                   if (!isRefreshing && searchController.text.isEmpty) {
@@ -168,14 +174,17 @@ class ThreadsListState extends State<ThreadsList> {
                       my.boardBloc.add(ReloadThreads(board: widget.board));
                     });
                   }
-                  return Container(height: height, child: const CupertinoActivityIndicator());
+                  return Container(
+                      height: height,
+                      child: const CupertinoActivityIndicator());
                 }
                 return Container(
                   height: height,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CupertinoActivityIndicator.partiallyRevealed(progress: value),
+                      CupertinoActivityIndicator.partiallyRevealed(
+                          progress: value),
                     ],
                   ),
                 );

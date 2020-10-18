@@ -1,5 +1,3 @@
-// import 'package:audioplayers/audioplayers.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
@@ -36,8 +34,8 @@ String getDomain(String domain) {
 Future setupSingletons() async {
   final prefs = PrefsBox(box: Hive.box('prefs'));
   final domain = prefs.getString('domain', defaultValue: Consts.domain2ch);
-  final fourchanDomain =
-      prefs.getString('fourchan_domain', defaultValue: FourchanApi.defaultDomain);
+  final fourchanDomain = prefs.getString('fourchan_domain',
+      defaultValue: FourchanApi.defaultDomain);
   final makabaApi = MakabaApi(domain: getDomain(domain));
   final fourchanApi = FourchanApi(domain: getDomain(fourchanDomain));
 
@@ -54,7 +52,6 @@ Future setupSingletons() async {
   final repo = Repo(reposMap);
 
   // exts
-  getIt.registerSingleton(FirebaseAnalytics());
 
   // apis
   getIt.registerSingleton(repo);
@@ -86,7 +83,6 @@ Future setupSingletons() async {
   getIt.registerSingleton<IconTheme>(DefaultIconTheme());
 }
 
-final analytics = getIt<FirebaseAnalytics>();
 final repo = getIt<Repo>();
 
 final contextTools = getIt<ContextTools>();

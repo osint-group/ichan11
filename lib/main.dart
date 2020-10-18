@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,7 +85,7 @@ Future<void> main() async {
   }
 
   if (isProd && !my.prefs.getBool('paranoia_mode')) {
-    FlutterError.onError = Crashlytics.instance.recordFlutterError;
+    return;
   }
 
   runApp(
@@ -144,11 +142,6 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    if (isProd && !my.prefs.getBool('paranoia_mode')) {
-      my.analytics.setAnalyticsCollectionEnabled(isProd);
-      _logAppOpen();
-    }
-
     return ValueListenableBuilder(
       valueListenable: my.prefs.box.listenable(
           keys: ['theme', 'theme_primary_color', 'theme_background_color']),
@@ -227,10 +220,6 @@ class _AppState extends State<App> {
     );
   }
 
-  Future<void> _logAppOpen() async {
-    return await my.analytics.logAppOpen();
-  }
-
   void rebuildAllChildren(BuildContext context) {
     void rebuild(Element el) {
       el.markNeedsBuild();
@@ -244,8 +233,7 @@ class _AppState extends State<App> {
     if (!isProd || !my.prefs.getBool('paranoia_mode')) {
       return [];
     } else {
-      final observer = FirebaseAnalyticsObserver(analytics: my.analytics);
-      return [observer];
+      return [];
     }
   }
 }

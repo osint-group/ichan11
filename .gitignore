@@ -47,3 +47,5 @@ tmp
 
 .env*
 exec.sh
+
+!gradle-wrapper.jar

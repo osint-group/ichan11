@@ -38,7 +38,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (text.isNotEmpty) {
       final replacedText = text
           .replaceAllMapped(RegExp(r'>>\d+(\s.{0,5})?\n'), (match) => '')
-          .replaceAllMapped(RegExp(r'^(.+)$', multiLine: true), (match) => ">${match.group(1)}");
+          .replaceAllMapped(RegExp(r'^(.+)$', multiLine: true),
+              (match) => ">${match.group(1)}");
 
       result = "${result.trim()}\n$replacedText";
     }
@@ -135,7 +136,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
             payload['threadId'] = result['threadId'].toString();
             payload['opcode'] = result['cookie'];
 
-            final titleOrBody = payload['title'].isEmpty ? payload['body'] : payload['title'];
+            final titleOrBody =
+                payload['title'].isEmpty ? payload['body'] : payload['title'];
 
             final fav = ThreadStorage(
               platform: payload['platform'],
@@ -181,7 +183,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         if (payload['body'] != " ") {
           payload['body'] = payload['body'].trim();
         }
-        if (["сажа", "сажи", "сажу", "sage"].contains(payload['body'].toLowerCase())) {
+        if (["сажа", "сажи", "сажу", "sage"]
+            .contains(payload['body'].toLowerCase())) {
           payload['isSage'] = true;
         }
 
@@ -220,7 +223,8 @@ class PostBloc extends Bloc<PostEvent, PostState> {
               ts.unreadPostId = payload["postId"];
               print("NEW  ts.unreadPostId= ${ts.unreadPostId}");
               ts.ownPostsCount += 1;
-              if (payload['isSage'] && payload['body'].toLowerCase().endsWith('скрыл')) {
+              if (payload['isSage'] &&
+                  payload['body'].toLowerCase().endsWith('скрыл')) {
                 ts.isHidden = true;
               }
               ts.putOrSave();
@@ -243,7 +247,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   bool _checkPostcount(String body) {
-    return body.toLowerCase().startsWith(RegExp(r'.{0,1}/[p|р][o|о]st[c|с][o|о]unt'));
+    return body
+        .toLowerCase()
+        .startsWith(RegExp(r'.{0,1}/[p|р][o|о]st[c|с][o|о]unt'));
   }
 
   Future<String> _calcPostcount() async {
@@ -286,22 +292,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     return Future.value(false);
   }
 
-  Future<Map<String, dynamic>> createPost(payload, {CancelToken cancelToken}) async {
+  Future<Map<String, dynamic>> createPost(payload,
+      {CancelToken cancelToken}) async {
     final isCancel = await _maybeCancel(state, payload['body']);
     if (isCancel) {
       return {};
     }
 
-    if (!isDebug) {
-      my.analytics.logEvent(
-          name: 'reply',
-          parameters: {'threadId': payload['threadId'], 'boardName': payload['boardName']});
-    }
-
     Map<String, dynamic> response;
     try {
-      response =
-          await repo.on(payload['platform']).createPost(payload: payload, cancelToken: cancelToken);
+      response = await repo
+          .on(payload['platform'])
+          .createPost(payload: payload, cancelToken: cancelToken);
     } on UnavailableException catch (_) {
       response = {
         "ok": false,
@@ -321,24 +323,17 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
 ///////////////////////////////////////////////////////////////
-  Future<Map<String, dynamic>> createThread(Map payload, {CancelToken cancelToken}) async {
+  Future<Map<String, dynamic>> createThread(Map payload,
+      {CancelToken cancelToken}) async {
     final isCancel = await _maybeCancel(state, payload['body']);
     if (isCancel) {
       return {};
     }
 
-    my.analytics.logEvent(
-      name: 'create_thread',
-      parameters: {
-        'title': payload['title'],
-        'body': payload['body'],
-        'boardName': payload['boardName']
-      },
-    );
-
     // final cookies = await getCookies(payload);
-    final response =
-        await repo.on(payload['platform']).createThread(payload: payload, cancelToken: cancelToken);
+    final response = await repo
+        .on(payload['platform'])
+        .createThread(payload: payload, cancelToken: cancelToken);
 
     // print("Response is $response");
     toCancel = false;

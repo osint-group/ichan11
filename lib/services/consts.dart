@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:iChan/services/exports.dart';
 import 'package:package_info/package_info.dart';
-// import 'package:disk_space/disk_space.dart';
-
 import 'package:path_provider/path_provider.dart';
 
 import 'package:iChan/services/my.dart' as my;
 
 class Consts {
-  static final chatUrl = isIos ? 'https://t.me/ichan_public' : 'https://t.me/ichan_android';
+  static final chatUrl =
+      isIos ? 'https://t.me/ichan_public' : 'https://t.me/ichan_android';
   static const discordUrl = 'https://discord.gg/kNcUTJj';
   static const patreonUrl = 'https://www.patreon.com/zchandev';
 
@@ -39,7 +38,8 @@ class Consts {
   static final youMark = isIos ? "<i>YOU</i>" : "<b>&larr; YOU</b>";
 
   static double get backGestureVelocity =>
-      (my.prefs.getDouble('gestures_sensivity', defaultValue: 100.0) / 100.0) * 400.0;
+      (my.prefs.getDouble('gestures_sensivity', defaultValue: 100.0) / 100.0) *
+      400.0;
   static const verticalGestureVelocity = 300;
 
   // text size

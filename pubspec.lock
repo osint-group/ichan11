@@ -42,7 +42,7 @@ packages:
       name: bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.2"
+    version: "6.1.0"
   build:
     dependency: transitive
     description:
@@ -156,7 +156,7 @@ packages:
     source: hosted
     version: "3.4.1"
   collection:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -267,13 +267,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  disk_space:
-    dependency: "direct main"
-    description:
-      name: disk_space
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.3"
   easy_localization:
     dependency: "direct main"
     description:
@@ -330,69 +323,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
-  firebase:
-    dependency: transitive
-    description:
-      name: firebase
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "7.3.0"
-  firebase_analytics:
-    dependency: "direct main"
-    description:
-      name: firebase_analytics
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.0.0"
-  firebase_analytics_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_analytics_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
-  firebase_analytics_web:
-    dependency: transitive
-    description:
-      name: firebase_analytics_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
-  firebase_core:
-    dependency: "direct main"
-    description:
-      name: firebase_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.0"
-  firebase_core_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_core_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
-  firebase_core_web:
-    dependency: transitive
-    description:
-      name: firebase_core_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.0"
-  firebase_crashlytics:
-    dependency: "direct main"
-    description:
-      name: firebase_crashlytics
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4+1"
-  firebase_messaging:
-    dependency: transitive
-    description:
-      name: firebase_messaging
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.0.16"
   fixnum:
     dependency: transitive
     description:
@@ -405,29 +335,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_apns:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "297ca328ee6f641893db15d03411b823cb3f5258"
-      url: "git@github.com:FloPMT/flutter-apns.git"
-    source: git
-    version: "1.2.0"
   flutter_bloc:
     dependency: "direct main"
     description:
       name: flutter_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.1"
+    version: "6.0.6"
   flutter_cache_manager:
     dependency: "direct main"
     description:
       name: flutter_cache_manager
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.1"
+    version: "1.4.2"
   flutter_hooks:
     dependency: "direct main"
     description:
@@ -522,12 +443,10 @@ packages:
   flutter_vlc_player:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "96d71052a797b81e4884ca9112b33430105f7bec"
-      url: "git@github.com:solid-software/flutter_vlc_player.git"
-    source: git
-    version: "4.0.1"
+      name: flutter_vlc_player
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -639,7 +558,7 @@ packages:
     source: hosted
     version: "1.5.0"
   intl:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -729,13 +648,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
-  ota_update:
-    dependency: "direct main"
-    description:
-      name: ota_update
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.4.1"
   package_config:
     dependency: transitive
     description:
@@ -863,7 +775,7 @@ packages:
     source: hosted
     version: "3.0.13"
   provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: provider
       url: "https://pub.dartlang.org"
@@ -912,7 +824,7 @@ packages:
     source: hosted
     version: "3.0.1"
   rxdart:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: rxdart
       url: "https://pub.dartlang.org"
@@ -1245,13 +1157,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.7+15"
-  wc_flutter_share:
-    dependency: "direct main"
-    description:
-      name: wc_flutter_share
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.2"
   web_socket_channel:
     dependency: transitive
     description:

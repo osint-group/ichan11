@@ -23,8 +23,10 @@ class FavoritesPage extends StatefulWidget {
   FavoritesPageState createState() => FavoritesPageState();
 }
 
-class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserver {
-  static final listenable = my.prefs.box.listenable(keys: ['favorites_as_blocks']);
+class FavoritesPageState extends State<FavoritesPage>
+    with WidgetsBindingObserver {
+  static final listenable =
+      my.prefs.box.listenable(keys: ['favorites_as_blocks']);
 
   @override
   void initState() {
@@ -51,11 +53,10 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
 
   @override
   Widget build(BuildContext context) {
-    my.analytics.setCurrentScreen(screenName: 'favorites');
-
     final Widget refreshButton =
         BlocBuilder<FavoriteBloc, FavoriteState>(builder: (context, state) {
-      final bool isRefreshing = state is FavoriteRefreshInProgress || state is FavoriteRefreshing;
+      final bool isRefreshing =
+          state is FavoriteRefreshInProgress || state is FavoriteRefreshing;
 
       // print("state = ${state}");
 
@@ -93,7 +94,9 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
               if (result == "clear_deleted") {
                 my.favoriteBloc.clearDeleted();
               } else if (result == "clear_all") {
-                Interactive(context).modalDelete(text: 'Seriously?').then((confirmed) {
+                Interactive(context)
+                    .modalDelete(text: 'Seriously?')
+                    .then((confirmed) {
                   if (confirmed) {
                     my.favs.box.clear();
                     my.favoriteBloc.favoriteUpdated();
@@ -106,7 +109,8 @@ class FavoritesPageState extends State<FavoritesPage> with WidgetsBindingObserve
             },
             child: Padding(
               padding: const EdgeInsets.all(5.0),
-              child: FaIcon(FlutterIcons.md_refresh_ion, size: 24, color: my.theme.navbarFontColor),
+              child: FaIcon(FlutterIcons.md_refresh_ion,
+                  size: 24, color: my.theme.navbarFontColor),
             ));
       }
     });
